@@ -118,12 +118,18 @@ class ConvGeMNeXt(nn.Module):
         num_classes: int = 38,
         p_init: float = 3.0,
         dropout: float = 0.3,
+        pretrained: bool = True,
     ) -> None:
         super().__init__()
 
         # ---- Backbone: ConvNeXt-Base (ImageNet pre-trained) ----------------
         # Load the full model first, then discard its head components.
-        _backbone = models.convnext_base(weights=models.ConvNeXt_Base_Weights.IMAGENET1K_V1)
+        weights = (
+            models.ConvNeXt_Base_Weights.IMAGENET1K_V1
+            if pretrained
+            else None
+        )
+        _backbone = models.convnext_base(weights=weights)
 
         # `features` is the main convolutional body (stages + layer norms).
         # Its output has 1024 channels at spatial resolution H'×W' for a 224×224 input.

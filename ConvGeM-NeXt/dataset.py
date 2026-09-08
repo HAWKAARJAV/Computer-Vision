@@ -189,6 +189,41 @@ def get_dataloaders(
     return train_loader, val_loader, test_loader, full_dataset
 
 
+def load_imagefolder(
+    data_dir: str,
+    dataset_name: str,
+    img_size: int = 224,
+) -> datasets.ImageFolder:
+    """Load a full ImageFolder dataset without splitting."""
+    dataset_path = os.path.join(data_dir, dataset_name)
+    if not os.path.isdir(dataset_path):
+        raise FileNotFoundError(
+            f"Dataset directory not found: '{dataset_path}'\n"
+            f"Expected structure: {dataset_path}/<class_name>/*.jpg"
+        )
+    transform = get_transforms(img_size=img_size)
+    return datasets.ImageFolder(root=dataset_path, transform=transform)
+
+
+def make_loader(
+    dataset: datasets.ImageFolder,
+    indices: List[int],
+    batch_size: int,
+    shuffle: bool,
+    num_workers: int = 0,
+    pin_memory: bool = False,
+) -> DataLoader:
+    """Build a DataLoader from a subset of dataset indices."""
+    subset = Subset(dataset, indices)
+    return DataLoader(
+        subset,
+        batch_size=batch_size,
+        shuffle=shuffle,
+        num_workers=num_workers,
+        pin_memory=pin_memory,
+    )
+
+
 # ---------------------------------------------------------------------------
 # Smoke-test
 # ---------------------------------------------------------------------------

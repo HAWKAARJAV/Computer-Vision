@@ -229,11 +229,12 @@ def main(args: argparse.Namespace) -> None:
     )
 
     # ---- Model -------------------------------------------------------------
-    num_classes = cfg.get_num_classes(args.dataset_name)
+    num_classes = len(dataset.classes)
     model = ConvGeMNeXt(
         num_classes=num_classes,
         p_init=cfg.GEM_P_INIT,
         dropout=cfg.DROPOUT,
+        pretrained=not args.no_pretrained,
     ).to(device)
 
     total_params = sum(p.numel() for p in model.parameters())
@@ -320,6 +321,7 @@ def main(args: argparse.Namespace) -> None:
                     "val_accuracy": val_acc,
                     "num_classes": num_classes,
                     "dataset_name": args.dataset_name,
+                    "no_pretrained": args.no_pretrained,
                 },
                 checkpoint_path,
             )
@@ -355,7 +357,7 @@ def parse_args() -> argparse.Namespace:
         "--dataset_name",
         type=str,
         default=cfg.DATASET_NAME,
-        choices=["PlantVillage", "PlantDoc"],
+        choices=["PlantVillage", "PlantDoc", "Demo"],
         help="Which dataset to train on.",
     )
     parser.add_argument(
@@ -387,6 +389,11 @@ def parse_args() -> argparse.Namespace:
         type=str,
         default=cfg.LOGS_DIR,
         help="Directory to save CSV logs and plots.",
+    )
+    parser.add_argument(
+        "--no_pretrained",
+        action="store_true",
+        help="Skip ImageNet backbone weights (useful for offline demo runs).",
     )
     return parser.parse_args()
 

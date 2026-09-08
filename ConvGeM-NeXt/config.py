@@ -22,6 +22,7 @@ DATASET_NAME = "PlantVillage"       # Default dataset; override via CLI or direc
 # Number of output classes per dataset
 NUM_CLASSES_PLANTVILL = 38          # PlantVillage: 38 disease + healthy classes
 NUM_CLASSES_PLANTDOC = 27           # PlantDoc: 27 classes (real-world, harder benchmark)
+NUM_CLASSES_DEMO = 5                # Tiny synthetic demo set (no download needed)
 
 
 # ---------------------------------------------------------------------------
@@ -92,6 +93,7 @@ def get_num_classes(dataset_name: str) -> int:
     mapping = {
         "PlantVillage": NUM_CLASSES_PLANTVILL,
         "PlantDoc":     NUM_CLASSES_PLANTDOC,
+        "Demo":         NUM_CLASSES_DEMO,
     }
     if dataset_name not in mapping:
         raise ValueError(

@@ -191,8 +191,9 @@ def main(args: argparse.Namespace) -> None:
             "Train the model first with: python train.py"
         )
 
-    ckpt = torch.load(args.checkpoint, map_location=device)
+    ckpt = torch.load(args.checkpoint, map_location=device, weights_only=False)
     num_classes = ckpt.get("num_classes", cfg.get_num_classes(args.dataset_name))
+    no_pretrained = args.no_pretrained or ckpt.get("no_pretrained", False)
     print(f"Loaded checkpoint from epoch {ckpt.get('epoch', '?')} | "
           f"val_loss={ckpt.get('val_loss', float('nan')):.4f} | "
           f"val_acc={ckpt.get('val_accuracy', float('nan'))*100:.2f}%\n")
@@ -202,6 +203,7 @@ def main(args: argparse.Namespace) -> None:
         num_classes=num_classes,
         p_init=cfg.GEM_P_INIT,
         dropout=cfg.DROPOUT,
+        pretrained=not no_pretrained,
     ).to(device)
     model.load_state_dict(ckpt["model_state_dict"])
     model.eval()
@@ -290,7 +292,7 @@ def parse_args() -> argparse.Namespace:
         "--dataset_name",
         type=str,
         default=cfg.DATASET_NAME,
-        choices=["PlantVillage", "PlantDoc"],
+        choices=["PlantVillage", "PlantDoc", "Demo"],
         help="Dataset to evaluate on.",
     )
     parser.add_argument(
@@ -316,6 +318,11 @@ def parse_args() -> argparse.Namespace:
         type=str,
         default=cfg.LOGS_DIR,
         help="Directory to save evaluation outputs.",
+    )
+    parser.add_argument(
+        "--no_pretrained",
+        action="store_true",
+        help="Skip ImageNet backbone weights (must match how the model was trained).",
     )
     return parser.parse_args()
 

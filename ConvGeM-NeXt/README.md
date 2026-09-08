@@ -48,6 +48,44 @@ ConvGeM-NeXt/
 
 ---
 
+## Quick Demo (no dataset download)
+
+Use this to present the project to your teacher **right now** — no Kaggle download needed.
+
+```bash
+cd ConvGeM-NeXt
+
+# Full mini demo: creates 100 synthetic images, trains 2 epochs, evaluates (~5–15 min on CPU)
+python3 demo.py
+
+# Fastest: only show architecture + data pipeline (~30 seconds)
+python3 demo.py --no-train
+```
+
+The demo uses 5 synthetic plant-disease classes under `data/Demo/`. Full paper results use PlantVillage (38 classes) and PlantDoc (27 classes) once you download those datasets.
+
+---
+
+## Improvements (for teacher / viva)
+
+These go **beyond the baseline paper implementation**:
+
+| Improvement | What it does | Why it matters |
+|-------------|--------------|----------------|
+| **Stratified K-Fold Cross-Validation** | Trains on K different splits, reports mean ± std accuracy/F1 | Single split can be lucky/unlucky; CV gives **reliable detection metrics** |
+| **Cross-Class Misdetection Analysis** | Lists which diseases get confused (e.g. Tomato blight → Tomato healthy) | Shows **where detection fails across classes**, not just overall accuracy |
+| **Mean Class Accuracy (MCA)** | Equal weight per disease class | Fair evaluation when some diseases have fewer images |
+| **Demo pipeline** | Synthetic data + offline training | Runnable presentation without multi-GB downloads |
+
+```bash
+# Run cross-validation + cross-class analysis on demo data (~2–5 min CPU)
+python cross_validation.py --dataset_name Demo --folds 3 --epochs 1 --no_pretrained
+```
+
+**Planned with full datasets:** cross-dataset generalization (train on PlantVillage → test on PlantDoc) to measure real-world detection transfer.
+
+---
+
 ## Setup
 
 ```bash
