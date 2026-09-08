@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.env.*
+
+# ML artifacts
+ConvGeM-NeXt/data/
+ConvGeM-NeXt/checkpoints/
+ConvGeM-NeXt/logs/
+*.pth
+*.pt
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/

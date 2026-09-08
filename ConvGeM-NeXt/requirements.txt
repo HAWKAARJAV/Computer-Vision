@@ -1,0 +1,21 @@
+# ConvGeM-NeXt — Python dependencies
+# Install with: pip install -r requirements.txt
+#
+# Python 3.9+ recommended
+# CUDA 11.8 or 12.x recommended for GPU training
+
+# Core deep learning
+torch>=2.1.0               # PyTorch with AMP support
+torchvision>=0.16.0        # ConvNeXt models + ImageFolder
+
+# Scientific computing
+numpy>=1.24.0
+scikit-learn>=1.3.0        # Stratified splits, metrics, classification_report
+
+# Visualisation
+matplotlib>=3.7.0          # Loss curve plots
+seaborn>=0.12.0            # Confusion matrix heatmap
+
+# Utilities (usually pre-installed)
+Pillow>=9.0.0              # Image loading backend for torchvision
+tqdm>=4.65.0               # Optional: progress bars (can be added later)
