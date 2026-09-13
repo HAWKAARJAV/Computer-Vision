@@ -1,0 +1,18 @@
+{
+  "accuracy": 0.9902912621359223,
+  "precision": 0.993421052631579,
+  "recall": 0.9868421052631579,
+  "f1": 0.987468671679198,
+  "macro_f1": 0.987468671679198,
+  "weighted_f1": 0.9893666204345816,
+  "weighted_precision": 0.9927184466019418,
+  "weighted_recall": 0.9902912621359223,
+  "mca": 0.9868421052631579,
+  "variant": "multiscale_attention",
+  "dataset_name": "SampleTest_PlantVillage",
+  "num_classes": 38,
+  "parameters": 90106394,
+  "best_epoch": 5,
+  "val_loss": 0.11473631612884189,
+  "val_accuracy": 0.9805825242718447
+}

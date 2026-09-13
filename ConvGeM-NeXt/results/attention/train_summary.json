@@ -1,0 +1,19 @@
+{
+  "variant": "attention",
+  "dataset_name": "SampleTest_PlantVillage",
+  "num_classes": 38,
+  "parameters": 88787274,
+  "trainable_parameters": 88787274,
+  "best_epoch": 5,
+  "best_val_loss": 0.0011555118456898817,
+  "best_val_accuracy": 1.0,
+  "final_train_loss": 0.005605057948639141,
+  "final_train_accuracy": 1.0,
+  "test_loss": 0.0012380440246982916,
+  "test_accuracy": 1.0,
+  "training_time_sec": 280.6312198638916,
+  "inference_ms_per_batch": 31.0352549990057,
+  "checkpoint": "results\\attention\\best_model.pth",
+  "output_dir": "results\\attention",
+  "run_config": "results\\attention\\run_config.json"
+}

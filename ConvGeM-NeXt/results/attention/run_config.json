@@ -1,0 +1,29 @@
+{
+  "variant": "attention",
+  "dataset_name": "SampleTest_PlantVillage",
+  "num_classes": 38,
+  "epochs": 5,
+  "batch_size": 32,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "img_size": 224,
+  "mean": [
+    0.485,
+    0.456,
+    0.406
+  ],
+  "std": [
+    0.229,
+    0.224,
+    0.225
+  ],
+  "random_seed": 42,
+  "optimizer": "AdamW",
+  "scheduler": "CosineAnnealingLR",
+  "loss": "CrossEntropyLoss",
+  "dropout": 0.3,
+  "gem_p_init": 3.0,
+  "pretrained": true,
+  "parameters": 88787274,
+  "trainable_parameters": 88787274
+}

@@ -1,0 +1,54 @@
+ConvGeM-NeXt — Test Results (SampleTest_PlantVillage, attention)
+============================================================
+accuracy: 1.0
+precision: 1.0
+recall: 1.0
+macro_f1: 1.0
+weighted_f1: 1.0
+mca: 1.0
+
+Per-class Report:
+                                                    precision    recall  f1-score   support
+
+                                Apple___Apple_scab     1.0000    1.0000    1.0000         2
+                                 Apple___Black_rot     1.0000    1.0000    1.0000         2
+                          Apple___Cedar_apple_rust     1.0000    1.0000    1.0000         3
+                                   Apple___healthy     1.0000    1.0000    1.0000         3
+                               Blueberry___healthy     1.0000    1.0000    1.0000         3
+          Cherry_(including_sour)___Powdery_mildew     1.0000    1.0000    1.0000         2
+                 Cherry_(including_sour)___healthy     1.0000    1.0000    1.0000         2
+Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot     1.0000    1.0000    1.0000         3
+                       Corn_(maize)___Common_rust_     1.0000    1.0000    1.0000         2
+               Corn_(maize)___Northern_Leaf_Blight     1.0000    1.0000    1.0000         3
+                            Corn_(maize)___healthy     1.0000    1.0000    1.0000         3
+                                 Grape___Black_rot     1.0000    1.0000    1.0000         3
+                      Grape___Esca_(Black_Measles)     1.0000    1.0000    1.0000         2
+        Grape___Leaf_blight_(Isariopsis_Leaf_Spot)     1.0000    1.0000    1.0000         3
+                                   Grape___healthy     1.0000    1.0000    1.0000         3
+          Orange___Haunglongbing_(Citrus_greening)     1.0000    1.0000    1.0000         3
+                            Peach___Bacterial_spot     1.0000    1.0000    1.0000         2
+                                   Peach___healthy     1.0000    1.0000    1.0000         3
+                     Pepper,_bell___Bacterial_spot     1.0000    1.0000    1.0000         3
+                            Pepper,_bell___healthy     1.0000    1.0000    1.0000         2
+                             Potato___Early_blight     1.0000    1.0000    1.0000         3
+                              Potato___Late_blight     1.0000    1.0000    1.0000         3
+                                  Potato___healthy     1.0000    1.0000    1.0000         3
+                               Raspberry___healthy     1.0000    1.0000    1.0000         3
+                                 Soybean___healthy     1.0000    1.0000    1.0000         3
+                           Squash___Powdery_mildew     1.0000    1.0000    1.0000         2
+                          Strawberry___Leaf_scorch     1.0000    1.0000    1.0000         3
+                              Strawberry___healthy     1.0000    1.0000    1.0000         2
+                           Tomato___Bacterial_spot     1.0000    1.0000    1.0000         3
+                             Tomato___Early_blight     1.0000    1.0000    1.0000         3
+                              Tomato___Late_blight     1.0000    1.0000    1.0000         3
+                                Tomato___Leaf_Mold     1.0000    1.0000    1.0000         3
+                       Tomato___Septoria_leaf_spot     1.0000    1.0000    1.0000         3
+     Tomato___Spider_mites Two-spotted_spider_mite     1.0000    1.0000    1.0000         2
+                              Tomato___Target_Spot     1.0000    1.0000    1.0000         3
+            Tomato___Tomato_Yellow_Leaf_Curl_Virus     1.0000    1.0000    1.0000         3
+                      Tomato___Tomato_mosaic_virus     1.0000    1.0000    1.0000         3
+                                  Tomato___healthy     1.0000    1.0000    1.0000         3
+
+                                          accuracy                         1.0000       103
+                                         macro avg     1.0000    1.0000    1.0000       103
+                                      weighted avg     1.0000    1.0000    1.0000       103
