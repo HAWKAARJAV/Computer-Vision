@@ -64,10 +64,12 @@ def train_fold(
     lr: float,
     device: torch.device,
     no_pretrained: bool,
+    variant: str = "baseline",
 ) -> tuple:
     """Train one CV fold and return (model, val_metrics)."""
     model = ConvGeMNeXt(
         num_classes=num_classes,
+        variant=variant,
         p_init=cfg.GEM_P_INIT,
         dropout=cfg.DROPOUT,
         pretrained=not no_pretrained,
@@ -83,7 +85,7 @@ def train_fold(
     best_metrics = {}
 
     for _ in range(epochs):
-        train_one_epoch(model, train_loader, criterion, optimizer, scaler, device)
+        train_one_epoch(model, train_loader, criterion, optimizer, scaler, device)  # loss, acc
         val_loss, val_acc = evaluate(model, val_loader, criterion, device)
         scheduler.step()
 
@@ -143,6 +145,7 @@ def main(args: argparse.Namespace) -> None:
             train_loader, val_loader, num_classes,
             epochs=args.epochs, lr=args.lr, device=device,
             no_pretrained=args.no_pretrained,
+            variant=args.variant,
         )
 
         y_true, y_pred = collect_predictions(model, val_loader, device)
@@ -227,8 +230,18 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Stratified k-fold CV + cross-class misdetection analysis.",
     )
-    parser.add_argument("--dataset_name", type=str, default="Demo",
-                        choices=["PlantVillage", "PlantDoc", "Demo"])
+    parser.add_argument(
+        "--dataset_name",
+        type=str,
+        default="Demo",
+        choices=list(cfg.DATASET_CLI_CHOICES),
+    )
+    parser.add_argument(
+        "--dataset",
+        type=str,
+        default=None,
+        help="Alias for --dataset_name (e.g. sampletest_plantvillage).",
+    )
     parser.add_argument("--data_dir", type=str, default=cfg.DATA_DIR)
     parser.add_argument("--folds", type=int, default=3)
     parser.add_argument("--epochs", type=int, default=1)
@@ -237,7 +250,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--logs_dir", type=str, default=cfg.LOGS_DIR)
     parser.add_argument("--top_confusions", type=int, default=5)
     parser.add_argument("--no_pretrained", action="store_true")
-    return parser.parse_args()
+    parser.add_argument(
+        "--variant",
+        type=str,
+        default=cfg.MODEL_VARIANT,
+        help="Architecture variant (default: baseline).",
+    )
+    args = parser.parse_args()
+    if args.dataset:
+        args.dataset_name = args.dataset
+    args.dataset_name = cfg.resolve_dataset_name(args.dataset_name)
+    return args
 
 
 if __name__ == "__main__":

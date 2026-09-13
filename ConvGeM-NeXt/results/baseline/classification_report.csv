@@ -1,0 +1,8 @@
+class,precision,recall,f1-score,support
+Corn___Common_Rust,0.6,1.0,0.75,3.0
+Potato___Healthy,0.5,1.0,0.6666666666666666,3.0
+Potato___Late_Blight,0.0,0.0,0.0,3.0
+Tomato___Early_Blight,0.5,0.6666666666666666,0.5714285714285714,3.0
+Tomato___Healthy,0.0,0.0,0.0,3.0
+macro avg,0.32,0.5333333333333333,0.3976190476190476,15.0
+weighted avg,0.32,0.5333333333333333,0.39761904761904765,15.0

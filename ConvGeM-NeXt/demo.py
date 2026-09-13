@@ -120,6 +120,7 @@ def main(args: argparse.Namespace) -> None:
     num_classes = len(dataset.classes)
     model = ConvGeMNeXt(
         num_classes=num_classes,
+        variant="baseline",
         p_init=cfg.GEM_P_INIT,
         dropout=cfg.DROPOUT,
         pretrained=args.pretrained,

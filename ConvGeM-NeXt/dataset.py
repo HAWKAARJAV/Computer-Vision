@@ -20,12 +20,19 @@ data/
     (38 class folders total)
   PlantDoc/
     (27 class folders)
+  SampleTest_PlantVillage/
+    (same 38 official PlantVillage class folders, synthetic JPEGs)
+  SampleTest_PlantDoc/
+    (same 27 official PlantDoc class folders, synthetic JPEGs)
+  Demo/
+    (tiny 5-class synthetic set)
 
 The folder names become the class labels automatically via ImageFolder.
 """
 
+import json
 import os
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 
 import numpy as np
 import torch
@@ -74,6 +81,52 @@ def get_transforms(img_size: int = 224) -> transforms.Compose:
 # 2.  Dataset loading + stratified splitting
 # ---------------------------------------------------------------------------
 
+def split_cache_path(data_dir: str, dataset_name: str, random_seed: int) -> str:
+    """Path to the reusable train/val/test index file for one dataset + seed."""
+    return os.path.join(data_dir, f"{dataset_name}_split_seed{random_seed}.json")
+
+
+def save_split_indices(
+    path: str,
+    train_idx: np.ndarray,
+    val_idx: np.ndarray,
+    test_idx: np.ndarray,
+    n_total: int,
+    random_seed: int,
+    dataset_name: str,
+) -> None:
+    payload = {
+        "dataset_name": dataset_name,
+        "random_seed": random_seed,
+        "n_total": int(n_total),
+        "train_idx": [int(i) for i in train_idx],
+        "val_idx": [int(i) for i in val_idx],
+        "test_idx": [int(i) for i in test_idx],
+    }
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    with open(path, "w") as f:
+        json.dump(payload, f)
+    print(f"[dataset] Saved reusable split → {path}")
+
+
+def load_split_indices(path: str, n_total: int, random_seed: int) -> Optional[tuple]:
+    if not os.path.isfile(path):
+        return None
+    with open(path) as f:
+        payload = json.load(f)
+    if int(payload.get("n_total", -1)) != int(n_total):
+        print(f"[dataset] Split cache ignored (sample count changed): {path}")
+        return None
+    if int(payload.get("random_seed", -1)) != int(random_seed):
+        print(f"[dataset] Split cache ignored (seed mismatch): {path}")
+        return None
+    train_idx = np.array(payload["train_idx"], dtype=np.int64)
+    val_idx = np.array(payload["val_idx"], dtype=np.int64)
+    test_idx = np.array(payload["test_idx"], dtype=np.int64)
+    print(f"[dataset] Reusing saved split → {path}")
+    return train_idx, val_idx, test_idx
+
+
 def get_dataloaders(
     data_dir: str,
     dataset_name: str,
@@ -82,6 +135,7 @@ def get_dataloaders(
     num_workers: int = 4,
     pin_memory: bool = True,
     random_seed: int = 42,
+    split_file: Optional[str] = None,
 ) -> Tuple[DataLoader, DataLoader, DataLoader, datasets.ImageFolder]:
     """Load a dataset and return train / val / test DataLoaders.
 
@@ -110,6 +164,12 @@ def get_dataloaders(
     Raises:
         FileNotFoundError: If the dataset directory does not exist.
     """
+    try:
+        from config import resolve_dataset_name
+        dataset_name = resolve_dataset_name(dataset_name)
+    except Exception:
+        pass
+
     dataset_path = os.path.join(data_dir, dataset_name)
     if not os.path.isdir(dataset_path):
         raise FileNotFoundError(
@@ -135,23 +195,32 @@ def get_dataloaders(
     # full_dataset.targets is a list of int labels matching full_dataset.samples
     labels: List[int] = full_dataset.targets
 
-    # ---- Stratified split 1: train (70%) vs temp (30%) --------------------
-    all_indices = np.arange(n_total)
-    train_idx, temp_idx = train_test_split(
-        all_indices,
-        test_size=0.30,
-        stratify=labels,
-        random_state=random_seed,
-    )
+    cache_path = split_file or split_cache_path(data_dir, dataset_name, random_seed)
+    cached = load_split_indices(cache_path, n_total, random_seed)
+    if cached is not None:
+        train_idx, val_idx, test_idx = cached
+    else:
+        # ---- Stratified split 1: train (70%) vs temp (30%) ----------------
+        all_indices = np.arange(n_total)
+        train_idx, temp_idx = train_test_split(
+            all_indices,
+            test_size=0.30,
+            stratify=labels,
+            random_state=random_seed,
+        )
 
-    # ---- Stratified split 2: val (15%) vs test (15%) from temp (30%) ------
-    temp_labels = [labels[i] for i in temp_idx]
-    val_idx, test_idx = train_test_split(
-        temp_idx,
-        test_size=0.50,        # 50% of 30% = 15% overall
-        stratify=temp_labels,
-        random_state=random_seed,
-    )
+        # ---- Stratified split 2: val (15%) vs test (15%) from temp --------
+        temp_labels = [labels[i] for i in temp_idx]
+        val_idx, test_idx = train_test_split(
+            temp_idx,
+            test_size=0.50,        # 50% of 30% = 15% overall
+            stratify=temp_labels,
+            random_state=random_seed,
+        )
+        save_split_indices(
+            cache_path, train_idx, val_idx, test_idx,
+            n_total=n_total, random_seed=random_seed, dataset_name=dataset_name,
+        )
 
     print(f"Train samples : {len(train_idx):,}  ({100*len(train_idx)/n_total:.1f}%)")
     print(f"Val   samples : {len(val_idx):,}   ({100*len(val_idx)/n_total:.1f}%)")
@@ -195,6 +264,11 @@ def load_imagefolder(
     img_size: int = 224,
 ) -> datasets.ImageFolder:
     """Load a full ImageFolder dataset without splitting."""
+    try:
+        from config import resolve_dataset_name
+        dataset_name = resolve_dataset_name(dataset_name)
+    except Exception:
+        pass
     dataset_path = os.path.join(data_dir, dataset_name)
     if not os.path.isdir(dataset_path):
         raise FileNotFoundError(

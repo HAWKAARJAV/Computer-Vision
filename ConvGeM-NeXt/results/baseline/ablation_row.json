@@ -1,0 +1,12 @@
+{
+  "Variant": "baseline",
+  "Accuracy": 0.5333333333333333,
+  "Macro_F1": 0.3976190476190476,
+  "Weighted_F1": 0.39761904761904765,
+  "Precision": 0.32,
+  "Recall": 0.5333333333333333,
+  "Parameters": 88621190,
+  "Best_Epoch": 1,
+  "Training_Time": 221.75512027740479,
+  "Inference_ms": 5225.1969812990865
+}
