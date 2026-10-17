@@ -7,6 +7,7 @@ Usage
   python ablation_study.py --dataset plantdoc
   python ablation_study.py --dataset demo --epochs 1 --no_pretrained --batch_size 8
   python ablation_study.py --dataset sampletest_plantvillage --epochs 1 --no_pretrained --batch_size 8
+  python ablation_study.py --dataset balanced --epochs 12 --batch_size 32
   python ablation_study.py --dataset realistic --epochs 12 --batch_size 32
 
 Each variant is trained and evaluated with the same split, seed, and
@@ -198,8 +199,8 @@ def parse_args() -> argparse.Namespace:
         type=str,
         default=cfg.DATASET,
         help="plantvillage | plantdoc | demo | sampletest_plantvillage | "
-             "sampletest_plantdoc | realistic "
-             "(canonical SampleTest_* and RealisticPV names also work).",
+             "sampletest_plantdoc | balanced | realistic "
+             "(canonical SampleTest_*, BalancedPV, RealisticPV names also work).",
     )
     parser.add_argument("--dataset_name", type=str, default=None, help="Alias for --dataset.")
     parser.add_argument("--data_dir", type=str, default=cfg.DATA_DIR)

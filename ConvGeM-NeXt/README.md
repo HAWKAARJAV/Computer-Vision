@@ -166,6 +166,16 @@ Precision, Recall, Parameters, Best_Epoch, Training_Time.
 Improvements change the **structure**, so parameter counts will differ
 slightly across variants. That is expected.
 
+### Teaching aid (tutors only)
+
+If lab GPUs cannot finish a full ablation in time, tutors may use **synthetic**
+example figures so students learn what typical curves and summary tables look
+like. These are **not** substitutes for running experiments:
+
+→ [`teaching_materials/README.md`](teaching_materials/README.md) — regenerate with
+`python generate_teaching_figures.py`. Students still run `ablation_study.py` for
+real metrics when hardware allows.
+
 ---
 
 ## Results (from paper)
@@ -191,6 +201,7 @@ ConvGeM-NeXt/
 ├── create_demo_dataset.py
 ├── create_sample_test_dataset.py
 ├── create_realistic_dataset.py
+├── create_balanced_dataset.py
 ├── requirements.txt
 ├── data/                  # PlantVillage/, PlantDoc/, SampleTest_*, RealisticPV/, Demo/
 ├── results/<variant>/     # Checkpoints, logs, metrics per experiment
@@ -236,6 +247,31 @@ python ablation_study.py --dataset sampletest_plantvillage --epochs 1 --batch_si
 ```
 
 Bare `sampletest` / `sample_test` resolve to `SampleTest_PlantVillage` (38 classes). Prefer the explicit aliases above. Canonical folder names: `SampleTest_PlantVillage`, `SampleTest_PlantDoc`.
+
+---
+
+## BalancedPV (medium synthetic — recommended for viva demo)
+
+| Dataset | Difficulty | Typical CNN ablation | kNN proxy (no CNN) |
+|---------|------------|----------------------|--------------------|
+| **SampleTest_PlantVillage** | Easy (strong per-class hues) | Often ~100% quickly | ~85–90% |
+| **BalancedPV** | Medium (crop hue bands + visible symptoms) | **~90–95% target** after 12 epochs | ~35–45% (kNN proxy) |
+| **RealisticPV** | Hard (shared leaf, overlapping lesions) | Often near chance without long training | ~2–5% |
+
+`data/BalancedPV/` uses the same **38 official PlantVillage folder names**. Images are synthetic leaf-on-soil JPEGs with learnable but non-cartoon cues — suitable for a fair four-variant ablation without SampleTest saturation or RealisticPV collapse. **~90–95% after training is a realistic demo goal, not a guarantee**; run training yourself and report whatever your run produces.
+
+```bash
+cd ConvGeM-NeXt
+
+# 38 classes × 32 images (1216 total). Skip if data/BalancedPV already exists.
+python create_balanced_dataset.py
+python create_balanced_dataset.py --force   # regenerate
+
+# Four-variant ablation (~1–2 h on RTX 4050)
+python ablation_study.py --dataset balanced --epochs 12 --batch_size 32
+```
+
+Aliases `balanced`, `balancedpv`, and `balanced_pv` resolve to `BalancedPV` (38 classes).
 
 ---
 

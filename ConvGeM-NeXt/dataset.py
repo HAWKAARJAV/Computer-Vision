@@ -26,6 +26,8 @@ data/
     (same 27 official PlantDoc class folders, synthetic JPEGs)
   RealisticPV/
     (same 38 official PlantVillage class folders; harder synthetic JPEGs)
+  BalancedPV/
+    (same 38 official PlantVillage class folders; medium synthetic JPEGs)
   Demo/
     (tiny 5-class synthetic set)
 

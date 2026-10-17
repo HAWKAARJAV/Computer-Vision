@@ -29,6 +29,7 @@ NUM_CLASSES_DEMO = 5                # Tiny synthetic demo set (no download neede
 NUM_CLASSES_SAMPLETEST_PV = 38      # SampleTest_PlantVillage (synthetic, official 38 names)
 NUM_CLASSES_SAMPLETEST_PD = 27      # SampleTest_PlantDoc (synthetic, official 27 names)
 NUM_CLASSES_REALISTIC_PV = 38       # RealisticPV (harder synthetic, official 38 names)
+NUM_CLASSES_BALANCED_PV = 38        # BalancedPV (medium synthetic, official 38 names)
 
 # Canonical on-disk folder names recognised by resolve_dataset_name()
 CANONICAL_DATASETS = (
@@ -38,6 +39,7 @@ CANONICAL_DATASETS = (
     "SampleTest_PlantVillage",
     "SampleTest_PlantDoc",
     "RealisticPV",
+    "BalancedPV",
 )
 
 # Strings accepted by argparse --dataset / --dataset_name (canonical + aliases)
@@ -58,6 +60,10 @@ DATASET_CLI_CHOICES = (
     "realistic",
     "realisticpv",
     "realistic_pv",
+    "BalancedPV",
+    "balanced",
+    "balancedpv",
+    "balanced_pv",
 )
 
 
@@ -133,6 +139,9 @@ def resolve_dataset_name(dataset_name: str) -> str:
 
     ``realistic`` / ``realisticpv`` / ``realistic_pv`` map to ``RealisticPV``
     (38 classes, harder synthetic set).
+
+    ``balanced`` / ``balancedpv`` / ``balanced_pv`` map to ``BalancedPV``
+    (38 classes, medium synthetic set for demo ablations).
     """
     mapping = {
         "plantvillage": "PlantVillage",
@@ -151,6 +160,9 @@ def resolve_dataset_name(dataset_name: str) -> str:
         "realistic": "RealisticPV",
         "realisticpv": "RealisticPV",
         "realistic_pv": "RealisticPV",
+        "balanced": "BalancedPV",
+        "balancedpv": "BalancedPV",
+        "balanced_pv": "BalancedPV",
     }
     key = dataset_name.strip()
     if key in CANONICAL_DATASETS:
@@ -163,7 +175,8 @@ def resolve_dataset_name(dataset_name: str) -> str:
             f"Supported: {', '.join(CANONICAL_DATASETS)}. "
             f"SampleTest aliases: sampletest / sampletest_plantvillage "
             f"(38 cls), sampletest_plantdoc (27 cls). "
-            f"RealisticPV aliases: realistic / realisticpv / realistic_pv (38 cls)."
+            f"RealisticPV aliases: realistic / realisticpv / realistic_pv (38 cls). "
+            f"BalancedPV aliases: balanced / balancedpv / balanced_pv (38 cls)."
         )
     return resolved
 
@@ -214,5 +227,6 @@ def get_num_classes(dataset_name: str) -> int:
         "SampleTest_PlantVillage": NUM_CLASSES_SAMPLETEST_PV,
         "SampleTest_PlantDoc":     NUM_CLASSES_SAMPLETEST_PD,
         "RealisticPV":             NUM_CLASSES_REALISTIC_PV,
+        "BalancedPV":              NUM_CLASSES_BALANCED_PV,
     }
     return mapping[canonical]

@@ -1,0 +1,606 @@
+You are modifying my existing Computer Vision project:
+
+Computer-Vision-main/
+└── ConvGeM-NeXt/
+    ├── model.py
+    ├── dataset.py
+    ├── train.py
+    ├── evaluate.py
+    ├── cross_validation.py
+    ├── config.py
+    ├── demo.py
+    ├── create_demo_dataset.py
+    └── README.md
+
+IMPORTANT CONTEXT
+=================
+This project reproduces the ConvGeM-NeXt plant disease classification architecture from:
+
+https://www.frontiersin.org/journals/plant-science/articles/10.3389/fpls.2026.1763739/full
+
+The current baseline architecture is:
+
+Input 224×224×3
+    ↓
+ImageNet normalization
+    ↓
+ImageNet-pretrained ConvNeXt-Base
+    ↓
+final feature map
+    ↓
+learnable GeM pooling (p initialized to 3)
+    ↓
+Linear 1024→1024
+    ↓
+BatchNorm1d
+    ↓
+ReLU
+    ↓
+Dropout(0.3)
+    ↓
+Linear 1024→num_classes
+
+The existing project already contains training/evaluation utilities. DO NOT destroy existing functionality.
+
+GOAL
+====
+We now need to turn this into a proper architectural ablation study with FOUR experiments.
+
+The purpose is to demonstrate two genuine architectural improvements over the paper baseline:
+
+1. Multi-Scale Feature Fusion (MSFF)
+2. Channel + Spatial Attention (lightweight CBAM-style attention)
+
+The four experiments must be:
+
+EXPERIMENT A — BASELINE
+-----------------------
+Original ConvGeM-NeXt exactly as currently implemented.
+
+Architecture:
+ConvNeXt-Base
+→ final Stage 4 only
+→ GeM
+→ existing classifier head
+
+This is the control/baseline.
+
+EXPERIMENT B — BASELINE + MULTI-SCALE FEATURE FUSION
+-----------------------------------------------------
+Use ConvNeXt Stage 2 + Stage 3 + Stage 4.
+
+Expected torchvision ConvNeXt-Base feature shapes for 224×224 input:
+
+Stage 2: 28×28×256
+Stage 3: 14×14×512
+Stage 4:  7×7×1024
+
+Create a Multi-Scale Feature Fusion module:
+
+Stage 2:
+28×28×256
+→ 1×1 convolution
+→ 28×28×256
+
+Stage 3:
+14×14×512
+→ 1×1 convolution 512→256
+→ 14×14×256
+→ upsample ×2
+→ 28×28×256
+
+Stage 4:
+7×7×1024
+→ 1×1 convolution 1024→256
+→ 7×7×256
+→ upsample ×4
+→ 28×28×256
+
+Concatenate along channels:
+
+28×28×256
++
+28×28×256
++
+28×28×256
+=
+28×28×768
+
+Then use a 3×3 convolution to fuse:
+
+28×28×768
+→ 28×28×256
+
+Then:
+→ GeM over the 28×28 spatial dimensions
+→ 256-dimensional feature vector
+
+Because the original classifier expects 1024 features, change only the first classifier projection:
+
+Linear 256→1024
+→ BatchNorm1d
+→ ReLU
+→ Dropout(0.3)
+→ Linear 1024→num_classes
+
+Do NOT change anything else.
+
+EXPERIMENT C — BASELINE + CHANNEL/SPATIAL ATTENTION
+---------------------------------------------------
+Keep the original ConvGeM-NeXt feature extraction unchanged:
+
+ConvNeXt Stage 4 only
+→ 7×7×1024
+
+Insert a lightweight CBAM-style attention block BEFORE GeM.
+
+Implement:
+
+1. Channel attention
+2. Spatial attention
+
+Channel attention:
+- Global average pooling over H,W
+- Small bottleneck MLP
+- ReLU
+- projection back to 1024 channels
+- sigmoid
+- multiply original feature map by channel attention weights
+
+Spatial attention:
+- compute channel-wise average map
+- compute channel-wise max map
+- concatenate those two maps
+- apply a small convolution, preferably 7×7
+- sigmoid
+- multiply feature map by spatial attention map
+
+So:
+
+ConvNeXt Stage 4
+→ Channel Attention
+→ Spatial Attention
+→ GeM
+→ original classifier head
+
+Do NOT change the classifier dimensions for Experiment C.
+
+EXPERIMENT D — MULTI-SCALE FUSION + ATTENTION
+---------------------------------------------
+Combine Experiments B and C.
+
+Pipeline:
+
+ConvNeXt
+    ↓
+Stage 2 + Stage 3 + Stage 4
+    ↓
+Multi-Scale Feature Fusion
+    ↓
+28×28×256
+    ↓
+Channel Attention
+    ↓
+Spatial Attention
+    ↓
+GeM
+    ↓
+256 features
+    ↓
+Linear 256→1024
+    ↓
+BatchNorm1d
+    ↓
+ReLU
+    ↓
+Dropout(0.3)
+    ↓
+Linear 1024→num_classes
+
+This is the FINAL proposed architecture.
+
+IMPORTANT FAIRNESS REQUIREMENTS
+================================
+The four experiments must differ ONLY in architecture.
+
+Keep these identical across all four experiments:
+
+- same dataset
+- same train/validation/test split
+- same random seed
+- same image size: 224×224
+- same ImageNet normalization
+- same data augmentation policy currently used by the baseline
+- same pretrained ConvNeXt-Base weights
+- same optimizer: AdamW
+- learning rate: 1e-3
+- weight decay: 1e-4
+- same cosine annealing scheduler
+- same epoch count: 30
+- same batch size: 64
+- same loss: CrossEntropyLoss
+- same early stopping/checkpointing behavior if already implemented
+
+Do NOT make one variant train longer than another.
+
+Do NOT silently modify the baseline architecture.
+
+The baseline must remain faithful to the current implementation/paper.
+
+MODEL API
+=========
+Refactor model.py cleanly so that the architecture can be selected using something like:
+
+model_variant = "baseline"
+model_variant = "multiscale"
+model_variant = "attention"
+model_variant = "multiscale_attention"
+
+Prefer a single configurable model class rather than four copy-pasted models.
+
+For example:
+
+ConvGeMNeXt(
+    num_classes=...,
+    variant="baseline"
+)
+
+Supported variants:
+
+"baseline"
+"multiscale"
+"attention"
+"multiscale_attention"
+
+Keep backward compatibility wherever reasonable.
+
+ARCHITECTURE IMPLEMENTATION DETAILS
+====================================
+1. Preserve the existing learnable GeM implementation.
+
+2. GeM must remain mathematically:
+
+GeM(x) =
+( mean(x^p) )^(1/p)
+
+with learnable p initialized to 3.0.
+
+3. The model must use torchvision ConvNeXt-Base.
+
+4. Explicitly expose/intercept Stage 2, Stage 3 and Stage 4 feature maps instead of only using the final feature tensor.
+
+5. Avoid hard-coding class count to 38.
+Use num_classes from the configuration so PlantVillage and PlantDoc both work.
+
+6. Attention should be lightweight.
+Do not introduce a huge transformer or unrelated architecture.
+
+7. Use standard PyTorch modules and keep the implementation easy to explain in a viva.
+
+8. Use adaptive pooling / interpolation where appropriate so tensor dimensions are robust.
+
+CONFIGURATION
+=============
+Update config.py so the user can select:
+
+MODEL_VARIANT=baseline
+
+or:
+
+MODEL_VARIANT=multiscale
+MODEL_VARIANT=attention
+MODEL_VARIANT=multiscale_attention
+
+Also allow:
+
+DATASET=plantvillage
+DATASET=plantdoc
+
+Do not break current command-line/config behavior.
+
+TRAINING
+========
+Update train.py so all four variants can be trained through the same code.
+
+Examples:
+
+python train.py --variant baseline
+python train.py --variant multiscale
+python train.py --variant attention
+python train.py --variant multiscale_attention
+
+If the current project uses a different CLI style, preserve it and add the equivalent functionality.
+
+Each run must automatically save:
+
+- model checkpoint
+- training loss history
+- validation loss history
+- training accuracy
+- validation accuracy
+- best epoch
+- final test metrics
+- configuration used for the run
+- model parameter count
+
+Use separate output folders, e.g.:
+
+results/
+    baseline/
+    multiscale/
+    attention/
+    multiscale_attention/
+
+EVALUATION
+==========
+Extend evaluate.py so every variant produces the same evaluation outputs.
+
+At minimum calculate:
+
+- accuracy
+- precision
+- recall
+- F1 score
+- macro F1
+- weighted F1
+- confusion matrix
+- per-class classification report
+
+Also save:
+
+results/<variant>/metrics.json
+results/<variant>/classification_report.csv
+results/<variant>/confusion_matrix.png
+
+Do not generate fake or hard-coded results.
+
+ABLATION SUMMARY
+================
+Create a new script:
+
+ablation_study.py
+
+This should make it easy to run all four experiments with the same settings.
+
+It should support something like:
+
+python ablation_study.py --dataset plantvillage
+
+and optionally:
+
+python ablation_study.py --dataset plantdoc
+
+For each variant:
+
+1. train
+2. evaluate
+3. save metrics
+4. save checkpoint
+5. record parameter count
+6. record training time
+7. record inference time if practical
+
+Then generate one consolidated file:
+
+results/ablation_summary.csv
+
+with columns such as:
+
+Variant
+Accuracy
+Macro_F1
+Weighted_F1
+Precision
+Recall
+Parameters
+Best_Epoch
+Training_Time
+
+Also generate:
+
+results/ablation_comparison.png
+
+The plot should compare the four models on accuracy and macro F1.
+
+IMPORTANT:
+The graph must use actual generated results only.
+
+REPRODUCIBILITY
+===============
+Use fixed random seeds.
+
+Make sure all four models use the same split.
+
+The split must be created once and reused, rather than regenerated differently for each architecture.
+
+Save the split information if necessary so experiments are directly comparable.
+
+Do NOT accidentally leak test data into training.
+
+SANITY TEST
+===========
+Before full training, add a simple architecture sanity check.
+
+For a dummy input:
+
+torch.randn(2, 3, 224, 224)
+
+verify that all four variants produce:
+
+[2, num_classes]
+
+Also print tensor shapes at important points when running a debug mode.
+
+For example:
+
+Baseline:
+input
+→ stage4
+→ GeM
+→ classifier
+
+Multiscale:
+stage2
+stage3
+stage4
+→ fused feature map
+→ GeM
+→ classifier
+
+Attention:
+stage4
+→ channel attention
+→ spatial attention
+→ GeM
+→ classifier
+
+Multiscale attention:
+stage2
+stage3
+stage4
+→ fused feature map
+→ channel attention
+→ spatial attention
+→ GeM
+→ classifier
+
+PARAMETER COUNT
+===============
+Print parameter counts for all variants.
+
+The report should make it clear that our improvements change the model structurally and therefore may change parameter count.
+
+DOCUMENTATION
+=============
+Update README.md with a clear section:
+
+"Architectural Ablation Study"
+
+Explain:
+
+A. Baseline:
+ConvGeM-NeXt
+
+B. Multi-Scale:
+Stage 2 + Stage 3 + Stage 4 fusion
+
+C. Attention:
+Channel + spatial attention
+
+D. Proposed:
+Multi-scale + channel/spatial attention
+
+Include an ASCII architecture diagram like:
+
+BASELINE
+--------
+ConvNeXt-Base
+    ↓
+Stage 4
+    ↓
+GeM
+    ↓
+Classifier
+
+
+MULTI-SCALE
+-----------
+Stage 2 ─┐
+Stage 3 ─┼→ Fusion → GeM → Classifier
+Stage 4 ─┘
+
+
+ATTENTION
+---------
+Stage 4
+  ↓
+Channel Attention
+  ↓
+Spatial Attention
+  ↓
+GeM
+  ↓
+Classifier
+
+
+PROPOSED
+--------
+Stage 2 ─┐
+Stage 3 ─┼→ Multi-Scale Fusion
+Stage 4 ─┘
+        ↓
+Channel Attention
+        ↓
+Spatial Attention
+        ↓
+GeM
+        ↓
+Classifier
+
+Also explain WHY each modification exists:
+
+Multi-scale:
+preserve fine-grained and high-level disease information.
+
+Attention:
+focus on disease-relevant channels and spatial regions, reducing irrelevant/background activation.
+
+ABLATION LOGIC
+==============
+The scientific purpose of the four experiments must be explicit:
+
+Experiment A:
+What does the original architecture achieve?
+
+Experiment B:
+Does multi-scale information help?
+
+Experiment C:
+Does attention help?
+
+Experiment D:
+Does combining both provide additional benefit?
+
+The project must make it possible to answer these four questions directly.
+
+IMPORTANT RESTRICTIONS
+======================
+- Do NOT replace ConvNeXt with a completely different backbone.
+- Do NOT add a Transformer.
+- Do NOT remove GeM.
+- Do NOT remove the existing classifier head design unnecessarily.
+- Do NOT claim improvement before experiments are actually run.
+- Do NOT fabricate accuracy numbers.
+- Do NOT alter test labels or test data.
+- Do NOT mix train and test data.
+- Do NOT silently use different preprocessing for different variants.
+- Do NOT add random augmentation to only one model.
+- Keep the code readable and suitable for a college project/viva.
+
+CODE QUALITY
+============
+Before finishing:
+
+1. Run syntax checks.
+2. Run the dummy forward pass for all four variants.
+3. Verify tensor shapes.
+4. Verify loss computation.
+5. Verify backpropagation works.
+6. Run at least a tiny smoke-test training run for each variant (for example 1 epoch on a tiny subset if the dataset is available).
+7. Fix all runtime errors.
+8. Do not stop after writing code; actually validate that the modified pipeline works.
+
+FINAL RESPONSE
+==============
+After implementing, summarize:
+
+1. Files changed
+2. What was added
+3. Exact architecture of each of the four variants
+4. Tensor dimensions at major points
+5. How to run each experiment
+6. How to run the complete ablation study
+7. What output files are generated
+8. Any remaining limitations or things that could not be tested because of missing datasets/resources
+
+Do not claim successful full training unless it was actually executed.
