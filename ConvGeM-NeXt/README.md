@@ -190,8 +190,9 @@ ConvGeM-NeXt/
 ├── sanity_check.py        # Dummy forward/backward for all variants
 ├── create_demo_dataset.py
 ├── create_sample_test_dataset.py
+├── create_realistic_dataset.py
 ├── requirements.txt
-├── data/                  # PlantVillage/, PlantDoc/, SampleTest_*, Demo/
+├── data/                  # PlantVillage/, PlantDoc/, SampleTest_*, RealisticPV/, Demo/
 ├── results/<variant>/     # Checkpoints, logs, metrics per experiment
 ├── checkpoints/           # Legacy demo path
 └── logs/                  # Legacy demo path
@@ -238,6 +239,26 @@ Bare `sampletest` / `sample_test` resolve to `SampleTest_PlantVillage` (38 class
 
 ---
 
+## RealisticPV (harder synthetic, same 38 class names)
+
+`data/RealisticPV/` is a larger synthetic set for a fair ablation when SampleTest saturates near 100%. Every class shares one leaf (same ellipse, veins, and soil). Disease cues are subtle and overlap related classes. Images are **not** real PlantVillage photos. Whatever accuracy training reports is the result of that run — not the paper's 99.65%.
+
+```bash
+cd ConvGeM-NeXt
+
+# 38 classes × 40 images. Skip if data/RealisticPV already exists.
+python create_realistic_dataset.py
+python create_realistic_dataset.py --force   # regenerate
+
+# Four-variant ablation (baseline, multiscale, attention, multiscale_attention).
+# About 1–2 hours on an RTX 4050 at 12 epochs, batch 32.
+python ablation_study.py --dataset realistic --epochs 12 --batch_size 32
+```
+
+Aliases `realistic`, `realisticpv`, and `realistic_pv` all resolve to `RealisticPV` (38 classes). Summary files: `results/ablation_summary.csv` and `results/ablation_comparison.png`.
+
+---
+
 ## Improvements (for teacher / viva)
 
 These go **beyond the baseline paper implementation**:
@@ -272,6 +293,9 @@ pip install -r requirements.txt
 #    python create_sample_test_dataset.py
 #    → data/SampleTest_PlantVillage/  (38 classes)
 #    → data/SampleTest_PlantDoc/      (27 classes)
+#    Harder synthetic set (shared leaf, overlapping lesions):
+#    python create_realistic_dataset.py
+#    → data/RealisticPV/              (38 classes × 40 images)
 ```
 
 **PlantVillage** — available on Kaggle: https://www.kaggle.com/datasets/emmarex/plantdisease  

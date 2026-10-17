@@ -13,6 +13,8 @@ ConvGeM-NeXt/data/*
 !ConvGeM-NeXt/data/SampleTest_PlantVillage/**
 !ConvGeM-NeXt/data/SampleTest_PlantDoc/
 !ConvGeM-NeXt/data/SampleTest_PlantDoc/**
+!ConvGeM-NeXt/data/RealisticPV/
+!ConvGeM-NeXt/data/RealisticPV/**
 !ConvGeM-NeXt/data/SampleTest_*_split_seed42.json
 ConvGeM-NeXt/checkpoints/
 ConvGeM-NeXt/logs/

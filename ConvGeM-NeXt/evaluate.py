@@ -310,7 +310,7 @@ def parse_args() -> argparse.Namespace:
         type=str,
         default=None,
         help="Alias for --dataset_name (plantvillage | plantdoc | demo | "
-             "sampletest_plantvillage | sampletest_plantdoc).",
+             "sampletest_plantvillage | sampletest_plantdoc | realistic).",
     )
     parser.add_argument(
         "--variant",

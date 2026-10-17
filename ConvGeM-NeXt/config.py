@@ -19,7 +19,7 @@ RESULTS_DIR = "results"             # Ablation outputs: results/<variant>/
 # Dataset
 # ---------------------------------------------------------------------------
 DATASET_NAME = "PlantVillage"       # Default dataset; override via CLI or direct assignment
-# Alias used by env-style configs / ablation CLI (plantvillage | plantdoc | demo | sampletest_*)
+# Alias used by env-style configs / ablation CLI (plantvillage | plantdoc | demo | sampletest_* | realistic)
 DATASET = "plantvillage"
 
 # Number of output classes per dataset
@@ -28,6 +28,7 @@ NUM_CLASSES_PLANTDOC = 27           # PlantDoc: 27 classes (real-world, harder b
 NUM_CLASSES_DEMO = 5                # Tiny synthetic demo set (no download needed)
 NUM_CLASSES_SAMPLETEST_PV = 38      # SampleTest_PlantVillage (synthetic, official 38 names)
 NUM_CLASSES_SAMPLETEST_PD = 27      # SampleTest_PlantDoc (synthetic, official 27 names)
+NUM_CLASSES_REALISTIC_PV = 38       # RealisticPV (harder synthetic, official 38 names)
 
 # Canonical on-disk folder names recognised by resolve_dataset_name()
 CANONICAL_DATASETS = (
@@ -36,6 +37,7 @@ CANONICAL_DATASETS = (
     "Demo",
     "SampleTest_PlantVillage",
     "SampleTest_PlantDoc",
+    "RealisticPV",
 )
 
 # Strings accepted by argparse --dataset / --dataset_name (canonical + aliases)
@@ -52,6 +54,10 @@ DATASET_CLI_CHOICES = (
     "sample_test",
     "sampletest_plantvillage",
     "sampletest_plantdoc",
+    "RealisticPV",
+    "realistic",
+    "realisticpv",
+    "realistic_pv",
 )
 
 
@@ -124,6 +130,9 @@ def resolve_dataset_name(dataset_name: str) -> str:
     Bare ``sampletest`` / ``sample_test`` map to ``SampleTest_PlantVillage``
     (38 classes). Prefer ``sampletest_plantvillage`` or
     ``sampletest_plantdoc`` when you need to be explicit.
+
+    ``realistic`` / ``realisticpv`` / ``realistic_pv`` map to ``RealisticPV``
+    (38 classes, harder synthetic set).
     """
     mapping = {
         "plantvillage": "PlantVillage",
@@ -139,6 +148,9 @@ def resolve_dataset_name(dataset_name: str) -> str:
         "sampletest_plantdoc": "SampleTest_PlantDoc",
         "sample_test_plantdoc": "SampleTest_PlantDoc",
         "sampletestplantdoc": "SampleTest_PlantDoc",
+        "realistic": "RealisticPV",
+        "realisticpv": "RealisticPV",
+        "realistic_pv": "RealisticPV",
     }
     key = dataset_name.strip()
     if key in CANONICAL_DATASETS:
@@ -150,7 +162,8 @@ def resolve_dataset_name(dataset_name: str) -> str:
             f"Unknown dataset '{dataset_name}'. "
             f"Supported: {', '.join(CANONICAL_DATASETS)}. "
             f"SampleTest aliases: sampletest / sampletest_plantvillage "
-            f"(38 cls), sampletest_plantdoc (27 cls)."
+            f"(38 cls), sampletest_plantdoc (27 cls). "
+            f"RealisticPV aliases: realistic / realisticpv / realistic_pv (38 cls)."
         )
     return resolved
 
@@ -200,5 +213,6 @@ def get_num_classes(dataset_name: str) -> int:
         "Demo":         NUM_CLASSES_DEMO,
         "SampleTest_PlantVillage": NUM_CLASSES_SAMPLETEST_PV,
         "SampleTest_PlantDoc":     NUM_CLASSES_SAMPLETEST_PD,
+        "RealisticPV":             NUM_CLASSES_REALISTIC_PV,
     }
     return mapping[canonical]

@@ -240,7 +240,7 @@ def parse_args() -> argparse.Namespace:
         "--dataset",
         type=str,
         default=None,
-        help="Alias for --dataset_name (e.g. sampletest_plantvillage).",
+        help="Alias for --dataset_name (e.g. sampletest_plantvillage, realistic).",
     )
     parser.add_argument("--data_dir", type=str, default=cfg.DATA_DIR)
     parser.add_argument("--folds", type=int, default=3)
