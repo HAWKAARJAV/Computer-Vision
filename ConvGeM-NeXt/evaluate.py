@@ -120,8 +120,13 @@ def collect_predictions(
     model: nn.Module,
     loader: torch.utils.data.DataLoader,
     device: torch.device,
+    tta: bool = False,
 ) -> tuple:
-    """Run inference on all batches and collect predictions + ground-truth."""
+    """Run inference on all batches and collect predictions + ground-truth.
+
+    With ``tta=True`` the softmax of the original, horizontally flipped and
+    vertically flipped image are averaged (test-time augmentation).
+    """
     model.eval()
     all_preds = []
     all_labels = []
@@ -131,6 +136,11 @@ def collect_predictions(
 
         with torch.cuda.amp.autocast(enabled=(device.type == "cuda")):
             logits = model(images)
+            if tta:
+                probs = logits.float().softmax(1)
+                probs = probs + model(torch.flip(images, dims=[3])).float().softmax(1)
+                probs = probs + model(torch.flip(images, dims=[2])).float().softmax(1)
+                logits = probs
 
         preds = logits.argmax(dim=1).cpu().numpy()
         all_preds.append(preds)
@@ -210,7 +220,7 @@ def run_evaluation(args: argparse.Namespace) -> dict:
         data_dir=args.data_dir,
         dataset_name=dataset_name,
         batch_size=args.batch_size,
-        img_size=cfg.IMG_SIZE,
+        img_size=int(ckpt.get("img_size", cfg.IMG_SIZE)),
         num_workers=num_workers,
         pin_memory=pin_memory,
         random_seed=cfg.RANDOM_SEED,
@@ -218,7 +228,8 @@ def run_evaluation(args: argparse.Namespace) -> dict:
     class_names = full_dataset.classes
 
     print("Running inference on test set …")
-    y_true, y_pred = collect_predictions(model, test_loader, device)
+    tta = bool(getattr(args, "tta", False))
+    y_true, y_pred = collect_predictions(model, test_loader, device, tta=tta)
     metrics = compute_metrics(y_true, y_pred, num_classes)
     metrics.update({
         "variant": variant,
@@ -228,6 +239,7 @@ def run_evaluation(args: argparse.Namespace) -> dict:
         "best_epoch": int(ckpt.get("epoch", 0)),
         "val_loss": float(ckpt.get("val_loss", float("nan"))),
         "val_accuracy": float(ckpt.get("val_accuracy", float("nan"))),
+        "tta": tta,
     })
 
     print("\n" + "=" * 60)
@@ -358,6 +370,11 @@ def parse_args() -> argparse.Namespace:
         "--no_pretrained",
         action="store_true",
         help="Skip ImageNet backbone weights (must match how the model was trained).",
+    )
+    parser.add_argument(
+        "--tta",
+        action="store_true",
+        help="Test-time augmentation: average predictions over original + flips.",
     )
     args = parser.parse_args()
     args.dataset_name = args.dataset_name or args.dataset or cfg.DATASET_NAME

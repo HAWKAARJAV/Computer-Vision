@@ -1,0 +1,8 @@
+Model,PlantDoc_Accuracy_%,Reported_as,Source
+MobileNet-V2,47.56,47.56,"Arshad et al. 2026, Front. Plant Sci. 17:1763739, Table 11"
+DenseNet-121,56.5,55–58,"Arshad et al. 2026, Front. Plant Sci. 17:1763739, Table 11"
+EfficientNet-B0,59.5,57–62,"Arshad et al. 2026, Front. Plant Sci. 17:1763739, Table 11"
+ResNet-50 + CBAM,69.52,69.52,"Arshad et al. 2026, Front. Plant Sci. 17:1763739, Table 11"
+ViT-RoT,72.85,72.85,"Arshad et al. 2026, Front. Plant Sci. 17:1763739, Table 11"
+Swin Transformer,77.54,77.54,"Arshad et al. 2026, Front. Plant Sci. 17:1763739, Table 11"
+ConvGeM-NeXt,94.69,94.69,"Arshad et al. 2026, Front. Plant Sci. 17:1763739, Table 11"

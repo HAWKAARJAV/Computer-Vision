@@ -1,0 +1,15 @@
+{
+  "protocol": "direct",
+  "variant": "baseline",
+  "source": "PlantDoc",
+  "target": "PlantVillage",
+  "note": "ILLUSTRATIVE \u2014 not measured from a real run",
+  "accuracy": 0.548,
+  "macro_f1": 0.499609185871983,
+  "weighted_f1": 0.5191840101031555,
+  "precision": 0.5088724304423269,
+  "recall": 0.483889693147306,
+  "mca": 0.4920028596125692,
+  "n_test": 236,
+  "mapped_target_classes": 28
+}

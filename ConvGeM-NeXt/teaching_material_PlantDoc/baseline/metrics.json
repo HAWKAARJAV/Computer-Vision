@@ -1,0 +1,18 @@
+{
+  "variant": "baseline",
+  "model": "ConvGeM-NeXt",
+  "dataset_name": "PlantDoc",
+  "num_classes": 27,
+  "accuracy": 0.9469,
+  "precision": 0.9477,
+  "macro_f1": 0.9465,
+  "mca": 0.8704,
+  "test_loss": 0.2552,
+  "three_seed_accuracy_mean": 0.9219,
+  "three_seed_accuracy_std": 0.0258,
+  "three_seed_macro_f1_mean": 0.923,
+  "three_seed_macro_f1_std": 0.025,
+  "parameters": 88655015,
+  "macro_f1_recomputed_from_table8": 0.8272,
+  "source": "Arshad et al. 2026, Front. Plant Sci. 17:1763739: Table 6, Table 7, \u00a74.3, \u00a74.4.1, Table 8; parameters counted from model.py"
+}

@@ -1,0 +1,9 @@
+{
+  "variant": "convnext_base",
+  "dataset_name": "PlantDoc",
+  "num_classes": 27,
+  "accuracy": 0.9184,
+  "macro_f1": 0.9231,
+  "source": "Arshad et al. 2026, Front. Plant Sci. 17:1763739, \u00a74.3",
+  "note": "Plain ConvNeXt-Base with GAP and the standard head. The paper reports only these two values."
+}

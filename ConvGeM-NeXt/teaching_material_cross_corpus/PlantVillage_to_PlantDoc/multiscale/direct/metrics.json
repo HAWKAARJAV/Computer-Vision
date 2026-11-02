@@ -1,0 +1,15 @@
+{
+  "protocol": "direct",
+  "variant": "multiscale",
+  "source": "PlantVillage",
+  "target": "PlantDoc",
+  "note": "ILLUSTRATIVE \u2014 not measured from a real run",
+  "accuracy": 0.562,
+  "macro_f1": 0.502581092165243,
+  "weighted_f1": 0.5423274618589926,
+  "precision": 0.5153394193736063,
+  "recall": 0.5080329485377454,
+  "mca": 0.5018087189027007,
+  "n_test": 236,
+  "mapped_target_classes": 28
+}

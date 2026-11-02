@@ -1,0 +1,16 @@
+{
+  "variant": "baseline",
+  "dataset_name": "PlantDoc",
+  "num_classes": 27,
+  "note": "ILLUSTRATIVE DEMO \u2014 not from a real PlantDoc training run",
+  "accuracy": 0.9469,
+  "macro_f1": 0.9465,
+  "weighted_f1": 0.9409,
+  "precision": 0.9477,
+  "recall": 0.8704,
+  "parameters": 88655015,
+  "best_epoch": 16,
+  "best_val_accuracy": 0.9469,
+  "training_time_sec": 2930.57,
+  "inference_ms_per_batch": 32.3695
+}

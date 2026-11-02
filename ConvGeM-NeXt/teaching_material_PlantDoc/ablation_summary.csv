@@ -1,0 +1,3 @@
+Variant,Accuracy,Macro_F1,Weighted_F1,Precision,Recall,Parameters,Best_Epoch,Training_Time,Inference_ms,Source
+convnext_base,0.9184,0.9231,,,,,,,,"Arshad et al. 2026, Front. Plant Sci. 17:1763739, §4.3 (Accuracy, Macro_F1)"
+baseline (ConvGeM-NeXt),0.9469,0.9465,,0.9477,,88655015,,,,"Arshad et al. 2026, Front. Plant Sci. 17:1763739, Table 6 / §4.3; Parameters counted from model.py"

@@ -30,7 +30,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.optim import AdamW
-from torch.optim.lr_scheduler import CosineAnnealingLR
+from torch.optim.lr_scheduler import CosineAnnealingLR, LambdaLR
 
 import matplotlib
 matplotlib.use("Agg")
@@ -199,6 +199,61 @@ def measure_inference_time(
     return float(sum(times) / len(times))
 
 
+def improvement_opts(args) -> dict:
+    """Opt-in improvements; defaults reproduce the paper's recipe exactly."""
+    return {
+        "augment": bool(getattr(args, "augment", False)),
+        "label_smoothing": float(getattr(args, "label_smoothing", 0.0) or 0.0),
+        "balanced_sampler": bool(getattr(args, "balanced_sampler", False)),
+        "backbone_lr_mult": float(getattr(args, "backbone_lr_mult", 1.0) or 1.0),
+        "warmup_epochs": int(getattr(args, "warmup_epochs", 0) or 0),
+        "init_checkpoint": getattr(args, "init_checkpoint", None),
+        "img_size": int(getattr(args, "img_size", None) or cfg.IMG_SIZE),
+    }
+
+
+def load_init_checkpoint(model: nn.Module, path: str, device) -> None:
+    """Initialise from another run (e.g. PlantVillage → PlantDoc).
+
+    Every tensor whose shape matches is copied; the final classifier layer is
+    skipped automatically when the number of classes differs.
+    """
+    ckpt = torch.load(path, map_location=device, weights_only=False)
+    src = ckpt.get("model_state_dict", ckpt)
+    tgt = model.state_dict()
+    keep = {k: v for k, v in src.items() if k in tgt and tgt[k].shape == v.shape}
+    skipped = sorted(set(src) - set(keep))
+    model.load_state_dict(keep, strict=False)
+    print(f"[train] Initialised from {path}: {len(keep)} tensors loaded"
+          + (f", skipped {skipped}" if skipped else ""))
+
+
+def build_optimizer(model: nn.Module, lr: float, backbone_lr_mult: float) -> AdamW:
+    """AdamW; optionally a smaller LR for the pre-trained backbone."""
+    if backbone_lr_mult == 1.0:
+        return AdamW(model.parameters(), lr=lr, weight_decay=cfg.WEIGHT_DECAY)
+    backbone = [p for n, p in model.named_parameters() if n.startswith("backbone.")]
+    rest = [p for n, p in model.named_parameters() if not n.startswith("backbone.")]
+    return AdamW(
+        [{"params": backbone, "lr": lr * backbone_lr_mult}, {"params": rest, "lr": lr}],
+        weight_decay=cfg.WEIGHT_DECAY,
+    )
+
+
+def build_scheduler(optimizer, epochs: int, warmup_epochs: int):
+    """Cosine annealing (paper). With warmup: linear ramp, then cosine."""
+    if warmup_epochs <= 0:
+        return CosineAnnealingLR(optimizer, T_max=epochs)
+
+    def factor(epoch: int) -> float:
+        if epoch < warmup_epochs:
+            return (epoch + 1) / (warmup_epochs + 1)
+        t = (epoch - warmup_epochs) / max(1, epochs - warmup_epochs)
+        return 0.5 * (1.0 + np.cos(np.pi * t))
+
+    return LambdaLR(optimizer, lr_lambda=factor)
+
+
 def run_training(args: argparse.Namespace) -> dict:
     """Full training pipeline. Returns a result dictionary for ablation."""
     set_seed(cfg.RANDOM_SEED)
@@ -236,14 +291,21 @@ def run_training(args: argparse.Namespace) -> dict:
     num_workers = cfg.NUM_WORKERS if device.type == "cuda" else 0
     pin_memory = cfg.PIN_MEMORY if device.type == "cuda" else False
 
+    opts = improvement_opts(args)
+    active = {k: v for k, v in opts.items()
+              if v not in (False, 0, 0.0, 1.0, None) and not (k == "img_size" and v == cfg.IMG_SIZE)}
+    print(f"  Improvements: {active if active else 'none (paper recipe)'}\n")
+
     train_loader, val_loader, test_loader, dataset = get_dataloaders(
         data_dir=args.data_dir,
         dataset_name=dataset_name,
         batch_size=args.batch_size,
-        img_size=cfg.IMG_SIZE,
+        img_size=opts["img_size"],
         num_workers=num_workers,
         pin_memory=pin_memory,
         random_seed=cfg.RANDOM_SEED,
+        augment=opts["augment"],
+        balanced_sampler=opts["balanced_sampler"],
     )
 
     num_classes = len(dataset.classes)
@@ -256,16 +318,15 @@ def run_training(args: argparse.Namespace) -> dict:
         debug=args.debug,
     ).to(device)
 
+    if opts["init_checkpoint"]:
+        load_init_checkpoint(model, opts["init_checkpoint"], device)
+
     total_params, trainable_params = count_parameters(model)
     print(f"Model parameters: {total_params:,}  (trainable {trainable_params:,})\n")
 
-    criterion = nn.CrossEntropyLoss()
-    optimizer = AdamW(
-        model.parameters(),
-        lr=args.lr,
-        weight_decay=cfg.WEIGHT_DECAY,
-    )
-    scheduler = CosineAnnealingLR(optimizer, T_max=args.epochs)
+    criterion = nn.CrossEntropyLoss(label_smoothing=opts["label_smoothing"])
+    optimizer = build_optimizer(model, args.lr, opts["backbone_lr_mult"])
+    scheduler = build_scheduler(optimizer, args.epochs, opts["warmup_epochs"])
     scaler = torch.cuda.amp.GradScaler(enabled=(device.type == "cuda"))
 
     run_config = {
@@ -276,7 +337,7 @@ def run_training(args: argparse.Namespace) -> dict:
         "batch_size": args.batch_size,
         "learning_rate": args.lr,
         "weight_decay": cfg.WEIGHT_DECAY,
-        "img_size": cfg.IMG_SIZE,
+        "img_size": opts["img_size"],
         "mean": cfg.MEAN,
         "std": cfg.STD,
         "random_seed": cfg.RANDOM_SEED,
@@ -288,6 +349,7 @@ def run_training(args: argparse.Namespace) -> dict:
         "pretrained": not args.no_pretrained,
         "parameters": total_params,
         "trainable_parameters": trainable_params,
+        "improvements": opts,
     }
     config_path = os.path.join(output_dir, "run_config.json")
     with open(config_path, "w") as f:
@@ -364,10 +426,12 @@ def run_training(args: argparse.Namespace) -> dict:
                     "train_loss": train_loss,
                     "train_accuracy": train_acc,
                     "num_classes": num_classes,
+                    "class_names": list(dataset.classes),
                     "dataset_name": dataset_name,
                     "variant": variant,
                     "no_pretrained": args.no_pretrained,
                     "parameters": total_params,
+                    "img_size": opts["img_size"],
                 },
                 checkpoint_path,
             )
@@ -516,6 +580,21 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Print tensor shapes on the first forward pass.",
     )
+    imp = parser.add_argument_group("proposed improvements (all off by default = paper recipe)")
+    imp.add_argument("--augment", action="store_true",
+                     help="Field-robust train-time augmentation (crop/flip/rotate/jitter/erase).")
+    imp.add_argument("--label_smoothing", type=float, default=0.0,
+                     help="Label smoothing for CrossEntropyLoss (e.g. 0.1).")
+    imp.add_argument("--balanced_sampler", action="store_true",
+                     help="Class-balanced sampling of the training split.")
+    imp.add_argument("--backbone_lr_mult", type=float, default=1.0,
+                     help="Backbone LR = lr × this (e.g. 0.1 for gentler fine-tuning).")
+    imp.add_argument("--warmup_epochs", type=int, default=0,
+                     help="Linear LR warm-up epochs before cosine decay.")
+    imp.add_argument("--init_checkpoint", type=str, default=None,
+                     help="Initialise from another checkpoint (e.g. PlantVillage best_model.pth).")
+    imp.add_argument("--img_size", type=int, default=None,
+                     help=f"Input resolution (default {cfg.IMG_SIZE}; e.g. 288 for small lesions).")
     args = parser.parse_args()
     raw_dataset = args.dataset_name or args.dataset or cfg.DATASET_NAME
     args.dataset_name = raw_dataset

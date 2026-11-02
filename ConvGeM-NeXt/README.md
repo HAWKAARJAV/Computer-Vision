@@ -197,6 +197,9 @@ ConvGeM-NeXt/
 ├── train.py               # Training loop (AMP, AdamW, CosineAnnealingLR)
 ├── evaluate.py            # Metrics + confusion matrix + metrics.json
 ├── ablation_study.py      # Train/eval all four variants
+├── cross_corpus.py        # PV → PD direct / finetune / scratch transfer
+├── improvement_study.py   # Cumulative S0–S6 improvement study
+├── IMPROVEMENTS.md        # Proposed improvements + paper weaknesses
 ├── sanity_check.py        # Dummy forward/backward for all variants
 ├── create_demo_dataset.py
 ├── create_sample_test_dataset.py
@@ -311,7 +314,69 @@ These go **beyond the baseline paper implementation**:
 python cross_validation.py --dataset_name Demo --folds 3 --epochs 1 --no_pretrained
 ```
 
-**Planned with full datasets:** cross-dataset generalization (train on PlantVillage → test on PlantDoc) to measure real-world detection transfer.
+---
+
+## Proposed Improvements (beyond the paper)
+
+See [`IMPROVEMENTS.md`](IMPROVEMENTS.md) for the weaknesses each change targets. All flags are off by default, which reproduces the paper's recipe.
+
+| Flag (train.py) | Change |
+|-----------------|--------|
+| `--augment` | Field-robust augmentation (crop/flip/rotate/jitter/erase), train split only |
+| `--label_smoothing 0.1` | Label smoothing |
+| `--balanced_sampler` | Class-balanced sampling |
+| `--backbone_lr_mult 0.1 --warmup_epochs 2` | Gentler backbone fine-tuning |
+| `--init_checkpoint <pv.pth>` | PlantVillage → PlantDoc initialisation |
+| `--img_size 288` | Higher input resolution |
+| `evaluate.py --tta` | Test-time augmentation (flips) |
+
+```bash
+python improvement_study.py --dataset plantdoc --variant baseline \
+    --pv_checkpoint results/baseline/best_model.pth
+```
+
+This writes `results/improvements/PlantDoc/<variant>/improvement_summary.csv` and `improvement_comparison.png`, which show measured cumulative gains over the paper-recipe reproduction (S0).
+
+---
+
+## Cross-Corpus Study (PlantVillage → PlantDoc)
+
+`cross_corpus.py` measures lab-to-field transfer. Every protocol is scored on the **same PlantDoc test split**:
+
+| Protocol | Training | Question |
+|----------|----------|----------|
+| `direct` | PlantVillage only | How far does a lab-trained model get on field photos with no adaptation? |
+| `finetune` | PlantVillage → PlantDoc | How much does PlantVillage pre-training help on PlantDoc? |
+| `scratch` | PlantDoc only (ImageNet init) | Reference for `finetune` |
+
+All 27 PlantDoc classes map to PlantVillage classes (`PD_TO_PV_CLASS_MAP`). In `direct`, the logits for PlantVillage-only classes are masked out. In `finetune`, the head rows for mapped classes are copied from the source model.
+
+```bash
+# Full study, paper baseline (trains PV first, then the three protocols)
+python cross_corpus.py --source plantvillage --target plantdoc --variant baseline
+
+# Reuse an existing PlantVillage checkpoint
+python cross_corpus.py --source plantvillage --target plantdoc \
+    --source_checkpoint results/baseline/best_model.pth --protocol direct
+
+# All four variants; reverse direction also works
+python cross_corpus.py --variant all
+python cross_corpus.py --source plantdoc --target plantvillage
+```
+
+Outputs go to `results/cross_corpus/<Source>_to_<Target>/`: one folder per variant/protocol (metrics.json, classification_report.csv, confusion_matrix.png), plus `cross_corpus_summary.csv` and `cross_corpus_comparison.png`.
+
+Illustrative §4.9 figures (two transfer directions × four variants, **direct only**, no finetune/scratch) live in [`teaching_material_cross_corpus/`](teaching_material_cross_corpus/README.md). Regenerate with `python generate_cross_corpus_teaching_figures.py`.
+
+### PlantDoc layout
+
+`data/PlantDoc/` can be either a flat `<class>/` folder (split 70/15/15) or the official GitHub release with `train/<class>/` and `test/<class>/`. For the official layout, the published test set is kept as-is, validation is carved out of `train/` (stratified), and the orphan train-only spider-mite class is dropped, which gives the standard 27 classes. Training is the same as for any other dataset:
+
+```bash
+python train.py --dataset plantdoc --variant baseline --epochs 30 --batch_size 32
+python evaluate.py --dataset plantdoc --variant baseline
+python ablation_study.py --dataset plantdoc
+```
 
 ---
 

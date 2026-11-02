@@ -1,0 +1,15 @@
+{
+  "protocol": "direct",
+  "variant": "attention",
+  "source": "PlantVillage",
+  "target": "PlantDoc",
+  "note": "ILLUSTRATIVE \u2014 not measured from a real run",
+  "accuracy": 0.576,
+  "macro_f1": 0.5109909178388549,
+  "weighted_f1": 0.5463667126696404,
+  "precision": 0.5215644577338127,
+  "recall": 0.5201621544955242,
+  "mca": 0.5174010661148026,
+  "n_test": 236,
+  "mapped_target_classes": 28
+}

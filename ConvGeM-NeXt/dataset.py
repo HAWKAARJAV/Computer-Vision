@@ -19,7 +19,9 @@ data/
       ...
     (38 class folders total)
   PlantDoc/
-    (27 class folders)
+    (27 class folders)          — flat layout, split 70/15/15
+    OR train/<class>/ + test/<class>/  — official GitHub release; the
+       published test set is kept and validation comes from train/
   SampleTest_PlantVillage/
     (same 38 official PlantVillage class folders, synthetic JPEGs)
   SampleTest_PlantDoc/
@@ -34,13 +36,15 @@ data/
 The folder names become the class labels automatically via ImageFolder.
 """
 
+import copy
 import json
 import os
 from typing import Tuple, List, Optional
 
 import numpy as np
 import torch
-from torch.utils.data import DataLoader, Subset
+from PIL import Image
+from torch.utils.data import DataLoader, Dataset, Subset, WeightedRandomSampler
 from torchvision import datasets, transforms
 from sklearn.model_selection import train_test_split
 
@@ -81,9 +85,135 @@ def get_transforms(img_size: int = 224) -> transforms.Compose:
     ])
 
 
+
+def get_train_transforms(img_size: int = 224) -> transforms.Compose:
+    """Field-robust training augmentation (proposed improvement, opt-in).
+
+    The paper trains without augmentation. PlantDoc test images differ from
+    training images in framing, lighting and background, so each op targets
+    one of those shifts:
+      * RandomResizedCrop  — scale / framing / partial leaves
+      * flips + rotation   — leaf orientation
+      * ColorJitter        — illumination and white balance
+      * RandomErasing      — occlusion by other leaves, hands, stems
+    Validation and test sets still use ``get_transforms`` (no augmentation).
+    """
+    return transforms.Compose([
+        transforms.RandomResizedCrop(img_size, scale=(0.5, 1.0), ratio=(0.75, 1.333)),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomVerticalFlip(),
+        transforms.RandomRotation(20),
+        transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.04),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        transforms.RandomErasing(p=0.25, scale=(0.02, 0.15)),
+    ])
+
+
+# ---------------------------------------------------------------------------
+# 1b. Official train/ + test/ layout (PlantDoc GitHub release)
+# ---------------------------------------------------------------------------
+
+IMG_EXTENSIONS = (".jpg", ".jpeg", ".png", ".bmp", ".webp", ".tif", ".tiff")
+
+
+class SampleListDataset(Dataset):
+    """Minimal ImageFolder-compatible dataset built from an explicit sample list.
+
+    Exposes ``samples``, ``targets``, ``classes`` and ``class_to_idx`` exactly
+    like ``torchvision.datasets.ImageFolder`` so the rest of the pipeline does
+    not care which layout the data came from.
+    """
+
+    def __init__(self, samples, classes, transform=None) -> None:
+        self.samples = list(samples)
+        self.targets = [t for _, t in self.samples]
+        self.classes = list(classes)
+        self.class_to_idx = {c: i for i, c in enumerate(self.classes)}
+        self.transform = transform
+
+    def __len__(self) -> int:
+        return len(self.samples)
+
+    def __getitem__(self, idx):
+        path, target = self.samples[idx]
+        with Image.open(path) as img:
+            img = img.convert("RGB")
+        if self.transform is not None:
+            img = self.transform(img)
+        return img, target
+
+
+def _scan_class_dirs(root: str) -> dict:
+    """Return ``{class_name: [image paths]}`` for every sub-folder of *root*."""
+    out = {}
+    for name in sorted(os.listdir(root)):
+        cdir = os.path.join(root, name)
+        if name.startswith(".") or not os.path.isdir(cdir):
+            continue
+        files = sorted(
+            os.path.join(cdir, f) for f in os.listdir(cdir)
+            if f.lower().endswith(IMG_EXTENSIONS) and not f.startswith(".")
+        )
+        if files:
+            out[name] = files
+    return out
+
+
+def has_official_split(dataset_path: str) -> bool:
+    """True when *dataset_path* holds ``train/<class>/`` and ``test/<class>/``."""
+    return all(
+        os.path.isdir(os.path.join(dataset_path, d)) and
+        bool(_scan_class_dirs(os.path.join(dataset_path, d)))
+        for d in ("train", "test")
+    )
+
+
+def build_official_split_dataset(dataset_path: str, transform):
+    """Merge ``train/`` and ``test/`` into one indexable dataset.
+
+    Only classes present in **both** folders are kept (PlantDoc ships an
+    orphan ``Tomato two spotted spider mites leaf`` class in train only;
+    dropping it gives the standard 27-class benchmark).
+
+    Returns:
+        ``(dataset, train_pool_idx, test_idx)``.
+    """
+    train_map = _scan_class_dirs(os.path.join(dataset_path, "train"))
+    test_map = _scan_class_dirs(os.path.join(dataset_path, "test"))
+    classes = sorted(set(train_map) & set(test_map))
+    dropped = sorted(set(train_map) ^ set(test_map))
+    if dropped:
+        print(f"[dataset] Classes missing from train/ or test/ (dropped): {dropped}")
+    samples = []
+    for split_map in (train_map, test_map):
+        for ci, cname in enumerate(classes):
+            samples.extend((p, ci) for p in split_map[cname])
+    n_train = sum(len(train_map[c]) for c in classes)
+    ds = SampleListDataset(samples, classes, transform=transform)
+    return ds, np.arange(n_train), np.arange(n_train, len(samples))
+
+
+def open_dataset(dataset_path: str, transform):
+    """Load *dataset_path* as either a flat ImageFolder or an official split.
+
+    Returns:
+        ``(dataset, official)`` where *official* is ``None`` for a flat folder
+        or ``(train_pool_idx, test_idx)`` for a ``train/`` + ``test/`` layout.
+    """
+    if has_official_split(dataset_path):
+        ds, pool_idx, test_idx = build_official_split_dataset(dataset_path, transform)
+        return ds, (pool_idx, test_idx)
+    return datasets.ImageFolder(root=dataset_path, transform=transform), None
+
 # ---------------------------------------------------------------------------
 # 2.  Dataset loading + stratified splitting
 # ---------------------------------------------------------------------------
+
+# Share of the official train/ folder held out for validation
+# (0.15 / 0.85 keeps the same train:val ratio as the 70/15/15 split).
+VAL_FRACTION_OF_POOL = 0.15 / 0.85
+
 
 def split_cache_path(data_dir: str, dataset_name: str, random_seed: int) -> str:
     """Path to the reusable train/val/test index file for one dataset + seed."""
@@ -140,6 +270,8 @@ def get_dataloaders(
     pin_memory: bool = True,
     random_seed: int = 42,
     split_file: Optional[str] = None,
+    augment: bool = False,
+    balanced_sampler: bool = False,
 ) -> Tuple[DataLoader, DataLoader, DataLoader, datasets.ImageFolder]:
     """Load a dataset and return train / val / test DataLoaders.
 
@@ -160,6 +292,9 @@ def get_dataloaders(
         num_workers:  CPU workers for parallel data loading.
         pin_memory:   Whether to pin host memory for faster GPU transfer.
         random_seed:  Seed for reproducible splits.
+        augment:      Apply ``get_train_transforms`` to the train split only.
+        balanced_sampler: Sample training images inversely to class frequency
+                      (helps minority PlantDoc classes; raises MCA).
 
     Returns:
         Tuple of ``(train_loader, val_loader, test_loader, full_dataset)``.
@@ -183,7 +318,7 @@ def get_dataloaders(
 
     # ---- Load full dataset with ImageFolder --------------------------------
     transform = get_transforms(img_size=img_size)
-    full_dataset = datasets.ImageFolder(root=dataset_path, transform=transform)
+    full_dataset, official = open_dataset(dataset_path, transform)
 
     num_classes = len(full_dataset.classes)
     n_total = len(full_dataset)
@@ -203,6 +338,24 @@ def get_dataloaders(
     cached = load_split_indices(cache_path, n_total, random_seed)
     if cached is not None:
         train_idx, val_idx, test_idx = cached
+    elif official is not None:
+        # ---- Official train/ + test/ layout: keep the published test set,
+        #      carve a stratified validation set out of the train pool -------
+        pool_idx, test_idx = official
+        val_frac = VAL_FRACTION_OF_POOL
+        pool_labels = [labels[i] for i in pool_idx]
+        train_idx, val_idx = train_test_split(
+            pool_idx,
+            test_size=val_frac,
+            stratify=pool_labels,
+            random_state=random_seed,
+        )
+        print(f"[dataset] Official split detected: train/ → train+val "
+              f"({100*(1-val_frac):.0f}/{100*val_frac:.0f}), test/ → test")
+        save_split_indices(
+            cache_path, train_idx, val_idx, test_idx,
+            n_total=n_total, random_seed=random_seed, dataset_name=dataset_name,
+        )
     else:
         # ---- Stratified split 1: train (70%) vs temp (30%) ----------------
         all_indices = np.arange(n_total)
@@ -232,7 +385,14 @@ def get_dataloaders(
     print(f"{'='*55}\n")
 
     # ---- Wrap index lists into Subset objects ------------------------------
-    train_subset = Subset(full_dataset, train_idx)
+    train_source = full_dataset
+    if augment:
+        # Shallow copy shares the sample list but carries its own transform,
+        # so val/test keep the deterministic pipeline.
+        train_source = copy.copy(full_dataset)
+        train_source.transform = get_train_transforms(img_size=img_size)
+        print("[dataset] Train-time augmentation: ON")
+    train_subset = Subset(train_source, train_idx)
     val_subset   = Subset(full_dataset, val_idx)
     test_subset  = Subset(full_dataset, test_idx)
 
@@ -243,9 +403,23 @@ def get_dataloaders(
         pin_memory=pin_memory,
     )
 
+    sampler = None
+    if balanced_sampler:
+        train_labels = np.array([labels[i] for i in train_idx])
+        counts = np.bincount(train_labels, minlength=num_classes).astype(float)
+        weights = 1.0 / counts.clip(min=1)[train_labels]
+        sampler = WeightedRandomSampler(
+            torch.as_tensor(weights, dtype=torch.double),
+            num_samples=len(train_idx),
+            replacement=True,
+            generator=torch.Generator().manual_seed(random_seed),
+        )
+        print("[dataset] Class-balanced sampler: ON")
+
     train_loader = DataLoader(
         train_subset,
-        shuffle=True,          # Shuffle training data each epoch
+        shuffle=sampler is None,   # Shuffle training data each epoch
+        sampler=sampler,
         **loader_kwargs,
     )
     val_loader = DataLoader(
@@ -280,7 +454,7 @@ def load_imagefolder(
             f"Expected structure: {dataset_path}/<class_name>/*.jpg"
         )
     transform = get_transforms(img_size=img_size)
-    return datasets.ImageFolder(root=dataset_path, transform=transform)
+    return open_dataset(dataset_path, transform)[0]
 
 
 def make_loader(
