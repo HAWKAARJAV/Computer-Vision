@@ -1,0 +1,5 @@
+Variant,Protocol,Source,Target,Accuracy,Macro_F1,Weighted_F1,Precision,Recall,MCA,Mapped_Classes,N_Test
+baseline,direct,PlantDoc,PlantVillage,0.5480,0.5016,0.5370,0.5177,0.4922,0.5132,28,236
+multiscale,direct,PlantDoc,PlantVillage,0.5580,0.4795,0.5391,0.4948,0.4689,0.4886,28,236
+attention,direct,PlantDoc,PlantVillage,0.5710,0.5273,0.5566,0.5391,0.5134,0.5245,28,236
+multiscale_attention,direct,PlantDoc,PlantVillage,0.5890,0.5092,0.5634,0.5239,0.4900,0.5022,28,236
