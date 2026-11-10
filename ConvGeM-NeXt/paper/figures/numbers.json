@@ -1,0 +1,99 @@
+{
+  "pv_cm_accuracy": 0.9538113695090439,
+  "pv_cm_mca": 0.9465325683807458,
+  "pv_cm_n": 3096,
+  "pv_per_class": {
+    "Pepper Bacterial spot": {
+      "precision": 0.9795918367346939,
+      "recall": 0.9664429530201343,
+      "f1": 0.9729729729729729,
+      "support": 149
+    },
+    "Pepper healthy": {
+      "precision": 0.9819819819819819,
+      "recall": 0.9819819819819819,
+      "f1": 0.9819819819819819,
+      "support": 222
+    },
+    "Potato Early blight": {
+      "precision": 0.9731543624161074,
+      "recall": 0.9666666666666667,
+      "f1": 0.9698996655518394,
+      "support": 150
+    },
+    "Potato Late blight": {
+      "precision": 0.9602649006622517,
+      "recall": 0.9666666666666667,
+      "f1": 0.9634551495016612,
+      "support": 150
+    },
+    "Potato healthy": {
+      "precision": 0.7777777777777778,
+      "recall": 0.9130434782608695,
+      "f1": 0.84,
+      "support": 23
+    },
+    "Tomato Bacterial spot": {
+      "precision": 0.9622641509433962,
+      "recall": 0.9592476489028213,
+      "f1": 0.9607535321821037,
+      "support": 319
+    },
+    "Tomato Early blight": {
+      "precision": 0.8733333333333333,
+      "recall": 0.8733333333333333,
+      "f1": 0.8733333333333333,
+      "support": 150
+    },
+    "Tomato Late blight": {
+      "precision": 0.9640287769784173,
+      "recall": 0.9370629370629371,
+      "f1": 0.9503546099290779,
+      "support": 286
+    },
+    "Tomato Leaf Mold": {
+      "precision": 0.9444444444444444,
+      "recall": 0.951048951048951,
+      "f1": 0.9477351916376306,
+      "support": 143
+    },
+    "Tomato Septoria leaf spot": {
+      "precision": 0.9691119691119691,
+      "recall": 0.943609022556391,
+      "f1": 0.9561904761904761,
+      "support": 266
+    },
+    "Tomato Spider mites": {
+      "precision": 0.9508196721311475,
+      "recall": 0.9243027888446215,
+      "f1": 0.9373737373737373,
+      "support": 251
+    },
+    "Tomato Target Spot": {
+      "precision": 0.9371980676328503,
+      "recall": 0.919431279620853,
+      "f1": 0.9282296650717703,
+      "support": 211
+    },
+    "Tomato YLC virus": {
+      "precision": 0.9754601226993865,
+      "recall": 0.9916839916839917,
+      "f1": 0.9835051546391753,
+      "support": 481
+    },
+    "Tomato mosaic virus": {
+      "precision": 0.8125,
+      "recall": 0.9285714285714286,
+      "f1": 0.8666666666666666,
+      "support": 56
+    },
+    "Tomato healthy": {
+      "precision": 0.9433198380566802,
+      "recall": 0.9748953974895398,
+      "f1": 0.9588477366255145,
+      "support": 239
+    }
+  },
+  "pd_cm_accuracy": 0.9279661016949152,
+  "pd_cm_n": 236
+}
