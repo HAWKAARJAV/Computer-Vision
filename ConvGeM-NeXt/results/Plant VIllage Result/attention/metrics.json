@@ -1,7 +1,7 @@
 {
   "variant": "attention",
   "dataset_name": "PlantVillage",
-  "num_classes": 15,
+  "num_classes": 38,
   "accuracy": 0.9964,
   "macro_f1": 0.9951,
   "weighted_f1": 0.992294,
@@ -9,8 +9,8 @@
   "recall": 0.989859,
   "mca": 0.989859,
   "parameters": 88787274,
-  "best_epoch": 15,
-  "best_val_accuracy": 0.9964,
+  "best_epoch": 18,
+  "best_val_accuracy": 0.934438,
   "training_time_sec": 2822.1,
   "inference_ms_per_batch": 30.9705,
   "provenance": {
@@ -21,8 +21,12 @@
     "command": "python ablation_study.py --dataset plantvillage --variant attention --epochs 20 --batch_size 64 --results_dir results/...",
     "checkpoint_in_repo": false,
     "checkpoint_expected": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Plant VIllage Result/attention/best_model.pth",
-    "headline_metrics_from": "ablation_comparison.png"
+    "headline_metrics_from": "ablation_comparison.png",
+    "history_csv": "ConvGeM-NeXt/results/Plant VIllage Result/attention/history.csv",
+    "headline_test_from": "ablation_comparison.png"
   },
   "test_accuracy_ablation": 0.9964,
-  "metrics_authority": "ablation_comparison.png"
+  "metrics_authority": "ablation_comparison.png for test accuracy; history.csv for validation curves",
+  "history_best_val_accuracy": 0.934438,
+  "history_best_epoch": 18
 }

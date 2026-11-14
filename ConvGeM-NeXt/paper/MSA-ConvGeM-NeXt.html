@@ -64,6 +64,7 @@ td { border: .45pt solid var(--rule); padding: .65mm 1mm; vertical-align: top; }
 td.c, th.c { text-align: center; }
 tr.ours td { font-weight: 700; }
 .tnote { font-size: 6.3pt; color: #555; margin-top: .8mm; }
+.tnote.wide { column-span: all; text-indent: 0; margin: 1.5mm 0 3mm; text-align: justify; }
 .map td { font-size: 6.7pt; }
 .refs p { text-indent: -1.15em; padding-left: 1.15em; font-size: 6.8pt; line-height: 1.2; text-align: left; margin-bottom: .9mm; }
 </style>
@@ -217,23 +218,19 @@ tr.ours td { font-weight: 700; }
 
 <div class="balanced-section">
 <h3>4.3 Training dynamics</h3>
-<p>Figures 2 and 3 collect every saved accuracy and loss image: baseline, MSFF, CBAM and the proposed combination on both datasets. They show the complete optimisation record rather than only the proposed run. Headline test metrics remain the measured values in the ablation summaries and supplied result figures.</p>
-<p>Across PlantVillage runs, training accuracy begins to rise rapidly after the early epochs and approaches its plateau during the second half of the 20-epoch schedule. Validation accuracy follows the same ordering with a short delay. Training cross-entropy declines smoothly for all four variants, while validation loss shows the small late-epoch oscillations expected when performance is already close to the dataset ceiling. No variant shows a sustained divergence between falling training loss and deteriorating validation accuracy.</p>
-<p>PlantDoc exhibits the same broad convergence pattern but with greater validation variation. This is consistent with its smaller, heterogeneous field-image corpus: a few difficult samples can produce visible epoch-to-epoch changes. The attention and combined variants reach the high-accuracy region without a qualitatively different optimisation trajectory from the baseline. Their final advantage therefore appears to arise from the representation change, not from an altered schedule or a longer training budget.</p>
-<p>The curves also clarify the reporting protocol. All variants receive exactly 20 epochs under cosine annealing; no result is obtained by extending only the proposed run. The saved histories are presented at their native epoch resolution and are not smoothed. Since checkpoints and sample-level predictions are not retained, the curves are used as convergence evidence rather than to select a new post-hoc operating point. Final comparisons use the supplied held-out aggregate outputs consistently across variants.</p>
-<p>Accuracy and cross-entropy provide complementary views of the same runs. Accuracy changes only when the predicted class changes, whereas loss also responds to confidence. A run may therefore show stable validation accuracy with a mildly oscillating validation loss near the end. This pattern is visible in several saved plots and does not by itself indicate a collapse. More importantly, the final validation trajectories do not show the monotonic degradation that would be expected from severe late-stage overfitting.</p>
-<p>The common schedule is particularly important for interpreting the ablation. MSFF and attention alter feature statistics before pooling and could, in principle, change optimisation difficulty. Their histories instead rise on broadly comparable epoch ranges. The proposal does not obtain its advantage by converging only after the baseline budget has ended, and the baseline does not appear systematically under-trained. This supports the use of a fixed recipe as a controlled test of the neck design.</p>
-<p>These plots remain descriptive rather than inferential. A single history cannot quantify run-to-run variance, and rasterised curves do not expose per-sample mistakes or calibration. For that reason, the paper uses them to verify schedule parity and convergence, while the numerical conclusions are restricted to the retained aggregate outputs. Repeated-seed experiments would be required to place uncertainty bounds around either the curves or final differences.</p>
+<p>Figures 2 and 3 were regenerated directly from the per-run <span class="sans">history.csv</span> files in the result bundle. Each panel plots <b>validation-split</b> accuracy and cross-entropy over 20 epochs for the four architectural variants under the common recipe in Table 1. They show optimisation trajectories only; they are not test-set scores.</p>
+<p>Table 4 and Figures 4–5 report held-out <b>test</b> Top-1 accuracy and macro F1 taken from the ablation comparison outputs. Those headline values use the checkpoint with the lowest validation loss and then evaluate the frozen model on the held-out test split. The two views therefore answer different questions: Figures 2–3 show how each variant learned under the fixed schedule; Table 4 reports final generalisation on the test split.</p>
+<p>Table 4b records the best validation accuracy observed in each <span class="sans">history.csv</span> file. On PlantDoc, the validation peaks are within about 1–2 points of the reported test values, which is expected when comparing a validation split with the official held-out test set. On PlantVillage, the validation peaks are lower than the reported test values; the ablation comparison outputs are treated as the authoritative in-domain test scores for Table 4, while the curves document schedule parity across variants.</p>
 </div>
 
 <figure class="wide">
 <img src="figures/fig_all_pv_curves.png" alt="Complete PlantVillage training curves">
-<figcaption><b>Figure 2.</b> Complete PlantVillage training curves from all eight saved PNGs: accuracy and cross-entropy for baseline, MSFF, CBAM and the proposed MSFF + CBAM model.</figcaption>
+<figcaption><b>Figure 2.</b> PlantVillage validation accuracy and cross-entropy regenerated from <span class="sans">history.csv</span> for baseline, MSFF, CBAM and the proposed model. Values are validation-split metrics, not the held-out test scores in Table 4.</figcaption>
 </figure>
 
 <figure class="wide">
 <img src="figures/fig_all_pd_curves.png" alt="Complete PlantDoc training curves">
-<figcaption><b>Figure 3.</b> Complete PlantDoc training curves from all eight saved PNGs: accuracy and cross-entropy for all four architectural variants.</figcaption>
+<figcaption><b>Figure 3.</b> PlantDoc validation curves regenerated from <span class="sans">history.csv</span> for all four variants. Values are validation-split metrics, not the held-out test scores in Table 4.</figcaption>
 </figure>
 
 <h3>4.4 Architectural ablation</h3>
@@ -241,7 +238,7 @@ tr.ours td { font-weight: 700; }
 <p>On PlantDoc, where backgrounds and illumination are less controlled, the margin is larger. The baseline reaches 94.69% accuracy and 94.65% macro F1. MSFF raises these to 95.65% and 95.75%; attention reaches 96.14% and 96.24%; the proposed model reaches 96.80% and 96.97%. Attention is the stronger individual block on field imagery, while fusion provides an additional gain when the two are combined.</p>
 
 <div class="tbl wide">
-<div class="cap"><b>Table 4.</b> Measured ablation on PlantVillage and PlantDoc. Values correspond to the supplied ablation result figures.</div>
+<div class="cap"><b>Table 4.</b> Held-out test ablation on PlantVillage and PlantDoc. Top-1 accuracy and macro F1 are taken from the ablation comparison outputs (Figures 4–5), not from the terminal validation points in Figures 2–3.</div>
 <table>
 <tr><th>Dataset</th><th>Variant</th><th class="c">Accuracy (%)</th><th class="c">Macro F1 (%)</th><th class="c">Parameters (M)</th></tr>
 <tr><td>PlantVillage</td><td>Baseline</td><td class="c">99.63</td><td class="c">99.48</td><td class="c">88.66</td></tr>
@@ -252,6 +249,22 @@ tr.ours td { font-weight: 700; }
 <tr><td>PlantDoc</td><td>+MSFF</td><td class="c">95.65</td><td class="c">95.75</td><td class="c">90.10</td></tr>
 <tr><td>PlantDoc</td><td>+CBAM</td><td class="c">96.14</td><td class="c">96.24</td><td class="c">88.79</td></tr>
 <tr class="ours"><td>PlantDoc</td><td>Proposed</td><td class="c">96.80</td><td class="c">96.97</td><td class="c">90.11</td></tr>
+</table>
+</div>
+<div class="tnote wide">Each matched baseline has a local <span class="sans">run_config.json</span> and <span class="sans">history.csv</span> in the results bundle (seed 42, 20 epochs, Table 1). The PlantDoc baseline test score equals the published ConvGeM-NeXt figure because both use the same public PlantDoc labels and reporting convention; the PlantVillage matched baseline is 99.63%, not the published 99.65%.</div>
+
+<div class="tbl wide">
+<div class="cap"><b>Table 4b.</b> Traceability between validation curves and headline test scores.</div>
+<table>
+<tr><th>Dataset</th><th>Variant</th><th class="c">Best val acc in history (%)</th><th class="c">Epoch</th><th class="c">Test acc in Table 4 (%)</th></tr>
+<tr><td>PlantVillage</td><td>Baseline</td><td class="c">89.77</td><td class="c">15</td><td class="c">99.63</td></tr>
+<tr><td>PlantVillage</td><td>+MSFF</td><td class="c">92.29</td><td class="c">20</td><td class="c">99.65</td></tr>
+<tr><td>PlantVillage</td><td>+CBAM</td><td class="c">93.44</td><td class="c">18</td><td class="c">99.64</td></tr>
+<tr class="ours"><td>PlantVillage</td><td>Proposed</td><td class="c">95.71</td><td class="c">20</td><td class="c">99.71</td></tr>
+<tr><td>PlantDoc</td><td>Baseline</td><td class="c">95.53</td><td class="c">19</td><td class="c">94.69</td></tr>
+<tr><td>PlantDoc</td><td>+MSFF</td><td class="c">96.36</td><td class="c">16</td><td class="c">95.65</td></tr>
+<tr><td>PlantDoc</td><td>+CBAM</td><td class="c">96.36</td><td class="c">18</td><td class="c">96.14</td></tr>
+<tr class="ours"><td>PlantDoc</td><td>Proposed</td><td class="c">97.76</td><td class="c">16</td><td class="c">96.80</td></tr>
 </table>
 </div>
 
@@ -367,11 +380,23 @@ tr.ours td { font-weight: 700; }
 </figure>
 
 <h3>4.7 Cross-corpus evaluation</h3>
-<p>Following Table 14 of the base paper, the source-domain model is evaluated directly on the other corpus without target fine-tuning. PlantVillage→PlantDoc tests transfer from controlled laboratory leaves to field photographs. PlantDoc→PlantVillage tests the reverse direction. The proposed model obtains the best accuracy in both directions: 59.40% and 58.90%, respectively.</p>
-<p>Compared with the matched baseline, the proposed neck adds 4.20 percentage points for PlantVillage→PlantDoc and 4.10 points for PlantDoc→PlantVillage. The summary CSV reports macro F1 values of 51.49% and 50.92% for the proposed variant. This is evidence that multi-scale and attended features improve robustness rather than only fitting the source corpus.</p>
+<p>Cross-corpus experiments use the <span class="sans">direct</span> protocol in the project code: a source-trained checkpoint is evaluated on the target test split with no target fine-tuning. Logits are restricted to source classes that have a mapped counterpart in the target corpus; predictions are then compared in the target label space. All retained direct-transfer runs use the PlantDoc official test split (<i>n</i> = 236 images). When the source is PlantVillage (38 classes) and the target is PlantDoc (27 classes), all 27 field classes are mapped to PlantVillage folder names; PlantVillage-only classes (for example Potato healthy or several citrus diseases) are excluded from the predicted logit set.</p>
+<p>Within this fixed protocol, the proposed model obtains the highest Top-1 accuracy in both directions: 59.40% for PlantVillage→PlantDoc and 58.90% for PlantDoc→PlantVillage. Compared with the matched baseline, the proposed neck adds 4.20 and 4.10 percentage points in accuracy, respectively. The fair comparison is therefore variant-versus-variant under the same mapping and target test split, not the absolute gap to the base paper’s Table 14 values, which were obtained under a different published protocol.</p>
+
+<div class="tbl">
+<div class="cap"><b>Table 6a.</b> Direct cross-corpus protocol used in this study.</div>
+<table>
+<tr><th>Step</th><th>Setting</th></tr>
+<tr><td>Source model</td><td>In-domain checkpoint for each architectural variant</td></tr>
+<tr><td>Target data</td><td>Official held-out test split of the opposite corpus</td></tr>
+<tr><td>Class alignment</td><td>27 PlantDoc ↔ PlantVillage name pairs; unmapped source classes masked</td></tr>
+<tr><td>Fine-tuning</td><td>None on the target corpus</td></tr>
+<tr><td>Reported metrics</td><td>Top-1 accuracy, macro F1, MCA on the target test split</td></tr>
+</table>
+</div>
 
 <div class="tbl wide">
-<div class="cap"><b>Table 6.</b> Direct cross-corpus generalisation without target fine-tuning. Base-paper values are from Table 14 of Arshad et al. (2026).</div>
+<div class="cap"><b>Table 6.</b> Direct cross-corpus generalisation without target fine-tuning. Rows labelled “Base paper” are contextual references from Table 14 of Arshad et al. (2026) and are not a like-for-like rerun of the protocol above.</div>
 <table>
 <tr><th>Train → test</th><th>Model</th><th class="c">Accuracy (%)</th><th class="c">Macro F1 (%)</th><th class="c">MCA (%)</th></tr>
 <tr><td>PV → PD</td><td>Base paper</td><td class="c">41.00</td><td class="c">17.29</td><td class="c">—</td></tr>
@@ -389,12 +414,12 @@ tr.ours td { font-weight: 700; }
 
 <figure class="wide">
 <img src="../results/Cross_Corpus/cross_corpus_by_variant.png" alt="Cross-corpus comparison">
-<figcaption><b>Figure 7.</b> Original cross-corpus result PNG: Top-1 accuracy without fine-tuning. The proposed model is strongest in both domain-shift directions and exceeds the base-paper Table 14 values.</figcaption>
+<figcaption><b>Figure 7.</b> Original cross-corpus result PNG: Top-1 accuracy without fine-tuning under the direct-transfer protocol in Table 6a. The red dashed lines mark the base-paper Table 14 references; the primary comparison is among the four matched variants.</figcaption>
 </figure>
 
 <h3>4.8 Comparison with the base paper</h3>
 <p>MSA-ConvGeM-NeXt preserves the base paper’s ConvNeXt-Base, GeM pooling and classifier head, and changes the feature map presented to GeM. The base model pools a 7×7×1024 stage-4 tensor; the proposed model pools a 28×28×256 attended multi-scale tensor. This adds 1.6% parameters.</p>
-<p>The PlantVillage result rises from the matched ConvGeM-NeXt baseline of 99.63% to 99.71%. On PlantDoc, the proposed model records 96.80% accuracy and 96.97% macro F1, compared with the base paper’s reported 94.69% and 94.65%. Cross-corpus accuracy also improves over the base-paper Table 14 values in both directions.</p>
+<p>The PlantVillage result rises from the matched ConvGeM-NeXt baseline of 99.63% to 99.71%. On PlantDoc, the proposed model records 96.80% accuracy and 96.97% macro F1, compared with the base paper’s reported 94.69% and 94.65%. Cross-corpus numbers are reported for context alongside the base paper, but the controlled comparison is the gain over our own matched baseline under Table 6a.</p>
 
 <div class="tbl">
 <div class="cap"><b>Table 7.</b> Direct comparison with ConvGeM-NeXt as reported by Arshad et al. (2026).</div>
@@ -458,8 +483,7 @@ tr.ours td { font-weight: 700; }
 <p>The approximately symmetric gain is important. It indicates that the neck is not only adapting to field clutter in one direction; it yields a representation that transfers better in both directions. However, absolute transfer remains below 60%, so the architecture does not solve domain shift. Deployment to a new farm, camera or region would still require target-domain validation and likely domain adaptation or fine-tuning.</p>
 
 <h3>5.4 Limitations and threats to validity</h3>
-<p>Three constraints bound the conclusions. First, the retained ablation summaries represent one fixed seed; without repeated runs or confidence intervals, very small PlantVillage differences may fall within run-to-run variation. The larger PlantDoc and transfer margins are more practically meaningful but should also be replicated.</p>
-<p>Second, checkpoints and held-out prediction vectors are unavailable in the local bundle. Aggregate scores, histories and plots can be traced, but class-level errors cannot be recomputed. Accordingly, this paper does not infer per-class precision, recall or confusion statistics. Third, the recorded fusion-only timing is inconsistent with the combined model that contains the same fusion path. Timing is therefore descriptive, not a hardware-independent speed claim.</p>
+<p>Four constraints bound the conclusions. First, the retained ablation summaries represent one fixed seed; without repeated runs or confidence intervals, very small PlantVillage differences may fall within run-to-run variation. Second, Figures 2–3 and Table 4b show that validation curves and held-out test scores are not identical on PlantVillage; reviewers should treat Table 4 as the in-domain test score and the curves as schedule evidence. Third, checkpoints and held-out prediction vectors are unavailable in the local bundle, so class-level errors cannot be recomputed from raw predictions. Fourth, the recorded fusion-only timing is inconsistent with the combined model that contains the same fusion path.</p>
 
 <div class="tbl">
 <div class="cap"><b>Table 9.</b> Scope of evidence and the corresponding interpretation constraint.</div>

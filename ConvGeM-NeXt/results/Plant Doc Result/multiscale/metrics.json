@@ -9,8 +9,8 @@
   "recall": 0.8842,
   "mca": 0.8842,
   "parameters": 90097831,
-  "best_epoch": 17,
-  "best_val_accuracy": 0.9565,
+  "best_epoch": 16,
+  "best_val_accuracy": 0.963557,
   "training_time_sec": 3584.2398,
   "inference_ms_per_batch": 98.7018,
   "provenance": {
@@ -21,8 +21,12 @@
     "command": "python ablation_study.py --dataset plantdoc --variant multiscale --epochs 20 --batch_size 32 --results_dir results/...",
     "checkpoint_in_repo": false,
     "checkpoint_expected": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Plant Doc Result/multiscale/best_model.pth",
-    "headline_metrics_from": "ablation_comparison.png"
+    "headline_metrics_from": "ablation_comparison.png",
+    "history_csv": "ConvGeM-NeXt/results/Plant Doc Result/multiscale/history.csv",
+    "headline_test_from": "ablation_comparison.png"
   },
   "test_accuracy_ablation": 0.9565,
-  "metrics_authority": "ablation_comparison.png"
+  "metrics_authority": "ablation_comparison.png for test accuracy; history.csv for validation curves",
+  "history_best_val_accuracy": 0.963557,
+  "history_best_epoch": 16
 }

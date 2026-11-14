@@ -1,7 +1,7 @@
 {
   "variant": "multiscale",
   "dataset_name": "PlantVillage",
-  "num_classes": 15,
+  "num_classes": 38,
   "accuracy": 0.9965,
   "macro_f1": 0.9953,
   "weighted_f1": 0.998939,
@@ -9,8 +9,8 @@
   "recall": 1.0,
   "mca": 1.0,
   "parameters": 90097831,
-  "best_epoch": 17,
-  "best_val_accuracy": 0.9965,
+  "best_epoch": 20,
+  "best_val_accuracy": 0.92289,
   "training_time_sec": 3144.07,
   "inference_ms_per_batch": 98.7018,
   "provenance": {
@@ -21,8 +21,12 @@
     "command": "python ablation_study.py --dataset plantvillage --variant multiscale --epochs 20 --batch_size 64 --results_dir results/...",
     "checkpoint_in_repo": false,
     "checkpoint_expected": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Plant VIllage Result/multiscale/best_model.pth",
-    "headline_metrics_from": "ablation_comparison.png"
+    "headline_metrics_from": "ablation_comparison.png",
+    "history_csv": "ConvGeM-NeXt/results/Plant VIllage Result/multiscale/history.csv",
+    "headline_test_from": "ablation_comparison.png"
   },
   "test_accuracy_ablation": 0.9965,
-  "metrics_authority": "ablation_comparison.png"
+  "metrics_authority": "ablation_comparison.png for test accuracy; history.csv for validation curves",
+  "history_best_val_accuracy": 0.92289,
+  "history_best_epoch": 20
 }

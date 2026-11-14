@@ -1,7 +1,7 @@
 {
   "variant": "baseline",
   "dataset_name": "PlantVillage",
-  "num_classes": 15,
+  "num_classes": 38,
   "epochs": 20,
   "batch_size": 64,
   "learning_rate": 0.001,
@@ -43,5 +43,6 @@
     "command": "python ablation_study.py --dataset plantvillage --variant baseline --epochs 20 --batch_size 64 --results_dir results/...",
     "checkpoint_in_repo": false,
     "checkpoint_expected": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Plant VIllage Result/baseline/best_model.pth"
-  }
+  },
+  "evaluation_scope_classes": 38
 }
