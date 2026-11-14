@@ -1,0 +1,12 @@
+{
+  "Variant": "multiscale",
+  "Accuracy": 0.9965,
+  "Macro_F1": 0.9953,
+  "Weighted_F1": 0.998939,
+  "Precision": 0.996181,
+  "Recall": 1.0,
+  "Parameters": 90097831,
+  "Best_Epoch": 17,
+  "Training_Time": 3144.07,
+  "Inference_ms": 98.7018
+}

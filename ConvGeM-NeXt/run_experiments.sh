@@ -28,7 +28,7 @@ if [[ "${SMOKE:-0}" == "1" ]]; then
   EXTRA=(--no_pretrained)
   echo ">>> SMOKE MODE: random-pixel data in $DATA_DIR, results in $RESULTS (numbers are meaningless)"
 else
-  DATA_DIR=data; RESULTS=runs   # real runs only; results/ holds illustrative files
+  DATA_DIR=data; RESULTS=runs   # fresh runs; commit summaries to results/ for the paper figures
   EPOCHS="${EPOCHS:-30}"; BATCH_PV="${BATCH_PV:-64}"; BATCH_PD="${BATCH_PD:-32}"
   EXTRA=()
 fi

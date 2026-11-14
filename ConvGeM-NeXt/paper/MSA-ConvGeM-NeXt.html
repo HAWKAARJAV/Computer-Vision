@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MSA-ConvGeM-NeXt</title>
+<style>
+@page {
+  size: A4;
+  margin: 18mm 17mm 17mm 17mm;
+  @top-left { content: "Jain and Varshney"; font: 6.5pt Arial, sans-serif; color: #6b7280; }
+  @top-right { content: "MSA-ConvGeM-NeXt"; font: 6.5pt Arial, sans-serif; color: #6b7280; }
+  @bottom-left { content: "Independent research manuscript"; font: 6.5pt Arial, sans-serif; color: #1a5a96; }
+  @bottom-center { content: counter(page, decimal-leading-zero); font: 6.5pt Arial, sans-serif; color: #555; }
+  @bottom-right { content: "Draft — not peer reviewed"; font: 6.5pt Arial, sans-serif; color: #1a5a96; }
+}
+:root { --blue: #1674a6; --rule: #b9b7c0; --table: #74727d; }
+* { box-sizing: border-box; }
+html, body { background: #fff; color: #111; }
+body { font-family: "Times New Roman", Times, serif; font-size: 9.1pt; line-height: 1.28; margin: 0; }
+h1, h2, h3, h4, .sans { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+p { margin: 0 0 0.18em 0; text-align: justify; text-indent: 1.35em; hyphens: auto; }
+h1.title { font-weight: 500; font-size: 20.5pt; line-height: 1.12; margin: 0 0 4mm; color: #26262a; }
+.kicker { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 7.2pt; letter-spacing: 0.04em; text-transform: uppercase; color: #555; margin-bottom: 8mm; text-align: right; text-indent: 0; }
+.authors { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 10.5pt; color: #60636a; margin-bottom: 1.5mm; }
+.affil { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 7pt; color: #777; margin-bottom: 7mm; }
+.abstract { margin-bottom: 4mm; }
+.abstract p { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 8.1pt; line-height: 1.38; text-indent: 0; margin-bottom: 1.3mm; }
+.keywords { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 7.3pt; color: #555; margin: 3mm 0 4mm; text-indent: 0; }
+h2 { color: var(--blue); font-weight: 500; font-size: 14pt; margin: 4.5mm 0 1.7mm; break-after: avoid; }
+h3 { font-weight: 500; font-size: 10.8pt; margin: 3.2mm 0 1.1mm; break-after: avoid; color: #26262a; }
+.titlepage { display: grid; grid-template-columns: 41mm 1fr; column-gap: 9mm; min-height: 238mm; break-after: page; }
+.sidebar { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 6.8pt; line-height: 1.35; color: #555; padding-top: 28mm; }
+.sidebar .journal { color: var(--blue); font-size: 12pt; font-weight: 600; margin-bottom: 12mm; }
+.sidebar h4 { font-size: 6.5pt; text-transform: uppercase; letter-spacing: .04em; margin: 4mm 0 .7mm; color: #222; }
+.sidebar p { text-indent: 0; text-align: left; margin: 0; }
+.titlemain { padding-top: 7mm; }
+.paper-body { column-count: 2; column-gap: 5mm; column-fill: auto; }
+.balanced-section { column-span: all; column-count: 2; column-gap: 5mm; }
+.balanced-section h3 { column-span: all; }
+ol.contrib { margin: 1mm 0 2mm 0; padding-left: 5mm; }
+ol.contrib li { margin-bottom: 1mm; text-align: justify; }
+.eq { display: flex; align-items: center; justify-content: center; position: relative; margin: .7mm 0 1.2mm; padding: 0 5mm 0 1mm; min-height: 7mm; white-space: nowrap; text-indent: 0; }
+.eq math { font-size: 8.5pt; font-family: "STIX Two Math", "Times New Roman", serif; }
+.eq .eqno { position: absolute; right: 0; font-size: 8pt; font-style: normal; }
+figure { margin: 2.5mm 0 3.5mm; break-inside: avoid; border: .4pt solid #d6d6dc; padding: 1.8mm; }
+figure.wide, .tbl.wide { column-span: all; }
+figure img { width: 100%; display: block; }
+figure.arch img { width: 100%; }
+figcaption { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 6.8pt; color: #666; margin-top: 1.4mm; line-height: 1.3; }
+figcaption b { color: #222; text-transform: uppercase; letter-spacing: .025em; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
+.pair img { width: 100%; border: 1px solid #e3e6ea; }
+.tbl { margin: 2.5mm 0 3.5mm; break-inside: avoid; }
+.table-pair { column-span: all; display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; align-items: start; margin: 2.5mm 0 4mm; }
+.table-pair .tbl { margin: 0; }
+.diagnostic-tables { display: none; }
+.nonmeasured { display: none; }
+.draftnotice { font: 7pt/1.35 "Helvetica Neue", Arial, sans-serif; color: #555; border-top: .5pt solid #b9b7c0; padding-top: 2mm; margin-top: 4mm; text-indent: 0; }
+.cap { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 6.8pt; color: #666; margin-bottom: 1mm; line-height: 1.25; }
+.cap b { color: #222; text-transform: uppercase; letter-spacing: .025em; }
+table { width: 100%; border-collapse: collapse; font-size: 6.9pt; line-height: 1.18; }
+th { background: var(--table); color: #fff; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 400; padding: .8mm 1mm; text-align: left; border: .4pt solid #fff; }
+td { border: .45pt solid var(--rule); padding: .65mm 1mm; vertical-align: top; }
+td.c, th.c { text-align: center; }
+tr.ours td { font-weight: 700; }
+.tnote { font-size: 6.3pt; color: #555; margin-top: .8mm; }
+.map td { font-size: 6.7pt; }
+.refs p { text-indent: -1.15em; padding-left: 1.15em; font-size: 6.8pt; line-height: 1.2; text-align: left; margin-bottom: .9mm; }
+</style>
+</head>
+<body>
+
+<section class="titlepage">
+<aside class="sidebar">
+<div class="journal">Manuscript Draft</div>
+<h4>Article type</h4>
+<p>Original Research</p>
+<h4>Prepared</h4>
+<p>November 2026</p>
+<h4>Status</h4>
+<p>Independent draft<br>Not submitted<br>Not peer reviewed</p>
+<h4>Corresponding author</h4>
+<p>Aarjav Jain<br>Netaji Subhas University of Technology<br>New Delhi, India</p>
+<h4>Research area</h4>
+<p>Artificial Intelligence in Agriculture</p>
+<h4>Base study</h4>
+<p>Arshad, Javed and Saudagar (2026)<br><i>Frontiers in Plant Science</i> 17:1763739</p>
+</aside>
+<div class="titlemain">
+<p class="kicker">Independent original research draft</p>
+<h1 class="title">MSA-ConvGeM-NeXt: multi-scale feature fusion and lightweight attention on ConvGeM-NeXt for plant disease detection</h1>
+<div class="authors">Aarjav Jain<sup>1</sup> and Jagrat Varshney<sup>1</sup></div>
+<div class="affil"><sup>1</sup>Netaji Subhas University of Technology (NSUT), New Delhi, India</div>
+
+<div class="abstract">
+<p><b>Introduction.</b> ConvGeM-NeXt pools only the deepest ConvNeXt-Base map with a learnable generalized mean (GeM) and a regularised classifier. Small lesions are already coarse at that 7×7 resolution, and every channel is treated equally. This paper adds two neck modules and measures each one on the same training recipe.</p>
+<p><b>Methods.</b> MSA-ConvGeM-NeXt keeps the ImageNet ConvNeXt-Base backbone, GeM pooling (initial exponent 3) and the ConvGeM-NeXt head. Before pooling it fuses stages 2, 3 and 4 at 28×28 (multi-scale feature fusion, MSFF) and re-weights the fused map with a CBAM-style channel and spatial attention block. Four variants — baseline, MSFF only, attention only, and both — were trained for 20 epochs with AdamW, cosine annealing, no augmentation and seed 42.</p>
+<p><b>Results.</b> On PlantVillage (15 classes), the proposed model reached 99.71% accuracy and 99.62% macro F1, compared with 99.63% and 99.48% for the matched ConvGeM-NeXt baseline. On PlantDoc (27 classes), it reached 96.80% accuracy and 96.97% macro F1, compared with 94.69% and 94.65%. In direct cross-corpus testing without target fine-tuning, the proposed variant reached 59.40% for PlantVillage→PlantDoc and 58.90% for PlantDoc→PlantVillage.</p>
+<p><b>Conclusion.</b> Multi-scale fusion and attention are complementary additions to GeM-pooled ConvNeXt. The combination gives the strongest in-domain and cross-corpus results while adding 1.6% parameters.</p>
+</div>
+<p class="keywords"><b>Keywords:</b> plant disease detection, ConvNeXt, generalized mean pooling, multi-scale feature fusion, CBAM, ablation</p>
+<p class="draftnotice">Formatting is inspired by the base paper for academic comparison. This manuscript has not been submitted to, accepted by, or published in <i>Frontiers in Plant Science</i>.</p>
+</div>
+</section>
+
+<div class="paper-body">
+
+<h2>1. Introduction</h2>
+<p>Image classifiers now score very highly on laboratory leaf photographs, and they drop once the photograph is taken in a field: the background is cluttered, the light changes, and a lesion may occupy only a few pixels (Mohanty et al., 2016; Singh et al., 2020). ConvGeM-NeXt (Arshad et al., 2026) addresses part of this by replacing global average pooling in ConvNeXt-Base (Liu et al., 2022) with learnable GeM pooling (Radenović et al., 2019) and a batch-normalised classifier head. The published model reports 99.65% accuracy on the 38-class PlantVillage set and 94.69% on PlantDoc.</p>
+<p>Two design choices remain open. GeM is applied only to the stage-4 map, which is 7×7 for a 224×224 input, so each cell covers a 32×32 patch and fine lesion texture is already mixed. The pooled vector also has no mechanism that prefers disease channels or disease locations over background.</p>
+<p>This paper keeps ConvGeM-NeXt fixed and changes only the neck:</p>
+<ol class="contrib">
+<li>Multi-scale feature fusion (MSFF) projects stages 2, 3 and 4 to 256 channels, upsamples the deeper maps to 28×28 and fuses them with a 3×3 convolution, so fine texture and disease-level semantics are pooled together.</li>
+<li>A CBAM-style block (Woo et al., 2018) then applies channel attention and spatial attention before GeM.</li>
+<li>A four-way ablation trains the baseline, each module alone, and both modules with the same optimiser, schedule, epoch budget and seed. Final comparisons use accuracy and macro F1 from the supplied result outputs.</li>
+</ol>
+
+<h2>2. Related work</h2>
+<p>Classical pipelines used colour, texture and shape features with SVM or random-forest classifiers. They are sensitive to lighting and need a new feature design for each crop. Convolutional networks replaced that pipeline. AlexNet, VGG, ResNet, DenseNet and EfficientNet variants are all reported above 97% on PlantVillage, and the same families often fall to roughly 50–75% on PlantDoc (the spread is tabulated in Arshad et al., 2026, Tables 11 and 12). Attention, as in ResNet-50 with CBAM, and hierarchical transformers such as Swin improve the field number, at a higher compute cost (Zhang et al., 2023; Liu et al., 2022).</p>
+<p>ConvNeXt modernises the residual network with a 7×7 depthwise convolution, LayerNorm and an inverted bottleneck, and matches transformer accuracy at convolutional cost (Liu et al., 2022). ConvGeM-NeXt is that backbone plus GeM pooling and a regularised head (Arshad et al., 2026). Feature pyramids already fuse resolutions in detection (Lin et al., 2017). The experiment here asks whether that fusion, followed by a small attention block, still helps once GeM pooling is already in place.</p>
+
+<h2>3. Proposed method</h2>
+<p>Figure 1 is the forward pass. The backbone, pooling and head are the ConvGeM-NeXt design. The two added blocks are the neck. Removing both blocks returns the baseline.</p>
+
+<figure class="arch wide">
+<img src="figures/fig01_user_architecture.png" alt="Architecture of Improved ConvGeM-NeXt">
+<figcaption><b>Figure 1.</b> Architecture supplied for the proposed Improved ConvGeM-NeXt. The top flow covers input, preprocessing, ConvNeXt-Base feature extraction, MSFF, channel–spatial attention, GeM pooling and the classifier. The lower panel expands the four ConvNeXt stages. The final projection uses K = 15 for PlantVillage and K = 27 for PlantDoc.</figcaption>
+</figure>
+
+<h3>3.1 Pre-processing</h3>
+<p>Every image is resized to 224×224 and normalised with the ImageNet mean (0.485, 0.456, 0.406) and standard deviation (0.229, 0.224, 0.225). No random crop, flip or colour jitter is applied, matching the base paper, so a difference between variants is not an augmentation effect. The same pipeline is used for every variant and both datasets.</p>
+
+<h3>3.2 Backbone</h3>
+<p>The feature extractor is torchvision ConvNeXt-Base with ImageNet-1K weights. The original classifier is removed and the four stages are fine-tuned. For a 224×224 input the stage maps are 56×56×128, 28×28×256, 14×14×512 and 7×7×1024. The baseline uses only the last of these.</p>
+
+<h3>3.3 Multi-scale feature fusion</h3>
+<p>Let S<sub>2</sub>, S<sub>3</sub> and S<sub>4</sub> be the stage-2, stage-3 and stage-4 maps. Each is projected to 256 channels by a 1×1 convolution. S<sub>3</sub> and S<sub>4</sub> are bilinearly upsampled to 28×28. The three tensors are concatenated and fused:</p>
+<div class="eq">
+<math display="block"><mi>F</mi><mo>=</mo><msub><mi mathvariant="normal">Conv</mi><mrow><mn>3</mn><mo>×</mo><mn>3</mn></mrow></msub><mo>(</mo><msub><mi>P</mi><mn>2</mn></msub><mo>(</mo><msub><mi>S</mi><mn>2</mn></msub><mo>)</mo><mo>∥</mo><mi>U</mi><mo>(</mo><msub><mi>P</mi><mn>3</mn></msub><mo>(</mo><msub><mi>S</mi><mn>3</mn></msub><mo>)</mo><mo>)</mo><mo>∥</mo><mi>U</mi><mo>(</mo><msub><mi>P</mi><mn>4</mn></msub><mo>(</mo><msub><mi>S</mi><mn>4</mn></msub><mo>)</mo><mo>)</mo><mo>)</mo><mo>∈</mo><msup><mi>ℝ</mi><mrow><mn>256</mn><mo>×</mo><mn>28</mn><mo>×</mo><mn>28</mn></mrow></msup></math>
+<span class="eqno">(1)</span></div>
+<p>The fused map is sixteen times denser than stage 4, so a small lesion still occupies its own cells, while the upsampled deeper maps carry class semantics into those cells.</p>
+
+<h3>3.4 Channel and spatial attention</h3>
+<p>Channel attention squeezes F with global average pooling, passes it through a bottleneck MLP with reduction 16 and a ReLU, and applies a sigmoid:</p>
+<div class="eq">
+<math display="block"><msub><mi>M</mi><mi>c</mi></msub><mo>=</mo><mi>σ</mi><mo>(</mo><msub><mi>W</mi><mn>2</mn></msub><mi>δ</mi><mo>(</mo><msub><mi>W</mi><mn>1</mn></msub><mi mathvariant="normal">GAP</mi><mo>(</mo><mi>F</mi><mo>)</mo><mo>)</mo><mo>)</mo><mo>,</mo><mspace width="1em"/><mi>F</mi><mo>′</mo><mo>=</mo><msub><mi>M</mi><mi>c</mi></msub><mo>⊙</mo><mi>F</mi></math>
+<span class="eqno">(2)</span></div>
+<p>Spatial attention concatenates the channel-wise average and maximum and applies a 7×7 convolution:</p>
+<div class="eq">
+<math display="block"><msub><mi>M</mi><mi>s</mi></msub><mo>=</mo><mi>σ</mi><mo>(</mo><msup><mi>f</mi><mrow><mn>7</mn><mo>×</mo><mn>7</mn></mrow></msup><mo>(</mo><msub><mi mathvariant="normal">Avg</mi><mi>c</mi></msub><mo>(</mo><mi>F</mi><mo>′</mo><mo>)</mo><mo>∥</mo><msub><mi mathvariant="normal">Max</mi><mi>c</mi></msub><mo>(</mo><mi>F</mi><mo>′</mo><mo>)</mo><mo>)</mo><mo>)</mo><mo>,</mo><mspace width="1em"/><mi>F</mi><mo>″</mo><mo>=</mo><msub><mi>M</mi><mi>s</mi></msub><mo>⊙</mo><mi>F</mi><mo>′</mo></math>
+<span class="eqno">(3)</span></div>
+<p>In the attention-only variant the same block is applied directly to the 1024-channel stage-4 map. In the proposed model it is applied to the 256-channel fused map.</p>
+
+<h3>3.5 GeM pooling and the classifier</h3>
+<p>The attended map is pooled with GeM. The exponent p is a learned parameter, initialised at 3:</p>
+<div class="eq">
+<math display="block"><msub><mi>f</mi><mi mathvariant="normal">GeM</mi></msub><mo>=</mo><msup><mfenced><mrow><mfrac><mn>1</mn><mrow><mo>|</mo><mi>Ω</mi><mo>|</mo></mrow></mfrac><munder><mo>∑</mo><mrow><mi>x</mi><mo>∈</mo><mi>Ω</mi></mrow></munder><msup><mrow><mi>F</mi><mo>″</mo><mo>(</mo><mi>x</mi><mo>)</mo></mrow><mi>p</mi></msup></mrow></mfenced><mfrac><mn>1</mn><mi>p</mi></mfrac></msup></math>
+<span class="eqno">(4)</span></div>
+<p>p = 1 is average pooling. Large p approaches max pooling. The head is unchanged from ConvGeM-NeXt: a linear layer to 1024 units, batch normalisation, ReLU, dropout 0.3, and a linear layer to K classes. K is 15 on the PlantVillage runs and 27 on the PlantDoc runs. The first linear layer takes 1024 inputs for the baseline and attention-only models, and 256 inputs when MSFF is on.</p>
+
+<h3>3.6 Optimisation</h3>
+<p>Table 1 is the recipe shared by all eight runs (four variants on two datasets). It is the configuration written in each run file: AdamW (Loshchilov and Hutter, 2019), learning rate 10<sup>−3</sup>, weight decay 10<sup>−4</sup>, cosine annealing over 20 epochs, and cross-entropy. The checkpoint is not required to read the curves; the numbers below are taken from <span class="sans">history.csv</span> in each result folder.</p>
+
+<div class="tbl">
+<div class="cap"><b>Table 1.</b> Training configuration. Same settings as the base paper’s Table 2 where the recipes overlap. Epochs here are 20 on one GPU; the base paper reports 30 epochs on a TPU pod.</div>
+<table>
+<tr><th>Item</th><th>Value</th></tr>
+<tr><td>Input</td><td>224×224 RGB, ImageNet normalisation, no augmentation</td></tr>
+<tr><td>Optimiser</td><td>AdamW, learning rate 1×10<sup>−3</sup>, weight decay 1×10<sup>−4</sup></td></tr>
+<tr><td>Schedule</td><td>Cosine annealing to zero over 20 epochs</td></tr>
+<tr><td>Loss</td><td>Cross-entropy, no label smoothing</td></tr>
+<tr><td>Batch size / dropout / GeM p<sub>0</sub></td><td>64 / 0.3 / 3.0 (learnable)</td></tr>
+<tr><td>Seed</td><td>42</td></tr>
+<tr><td>Initialisation</td><td>ConvNeXt-Base, ImageNet-1K, all stages fine-tuned</td></tr>
+<tr><td>What is reported</td><td>Held-out accuracy, macro F1 and direct cross-corpus transfer</td></tr>
+</table>
+</div>
+
+<h3>3.7 Experimental controls and reproducibility</h3>
+<p>The ablation is designed to isolate architecture rather than optimisation. Every variant uses the same input resolution, ImageNet normalisation, batch size, optimiser, initial learning rate, weight decay, cosine schedule, loss, epoch budget and random seed. The ConvNeXt-Base backbone is initialised from the same ImageNet-1K weights and fine-tuned end to end. The only changes are the feature path before GeM and the corresponding input width of the first classifier layer.</p>
+<p>MSFF variants project stages 2–4 to a common 256-channel width. Consequently, their classifier receives a 256-dimensional GeM descriptor rather than the 1024-dimensional stage-4 descriptor used by the baseline and attention-only variants. Parameter counts include this changed projection and classifier width. The proposed model therefore adds only 1.45 million parameters over the 88.66-million-parameter baseline despite processing a denser feature map.</p>
+<p>Each result directory retains the run configuration, epoch history, aggregate metric record and plots. These artefacts permit checking the learning-rate schedule, convergence behaviour, parameter count and reported aggregate scores. Large checkpoint files and held-out prediction vectors are not part of the local result bundle; the manuscript therefore avoids per-sample or class-wise claims that cannot be independently reconstructed from retained measured outputs.</p>
+
+<h2>4. Experiments</h2>
+<h3>4.1 Datasets</h3>
+<p>PlantVillage (Hughes and Salathé, 2015) is the laboratory set: one leaf, a plain background, even light. The runs in this study use a 15-class subset covering pepper, potato and tomato, which keeps several visually similar tomato blights. PlantDoc (Singh et al., 2020) is the field set: 27 classes, cluttered backgrounds, occlusion and uneven light. Example photographs of both domains are Figures 2 and 3 of the base paper. Table 2 records the setup used here. Image counts of the public releases are those given by Arshad et al.; this manuscript does not restate a split size that is not written in the run logs.</p>
+
+<div class="tbl">
+<div class="cap"><b>Table 2.</b> Datasets in this study, beside the base paper’s Table 3.</div>
+<table>
+<tr><th>Dataset</th><th class="c">Classes in our runs</th><th>Character</th><th>Base paper</th></tr>
+<tr><td>PlantVillage</td><td class="c">15</td><td>Laboratory leaves. Pepper, potato and tomato.</td><td>38 classes, full release</td></tr>
+<tr><td>PlantDoc</td><td class="c">27</td><td>Field photographs.</td><td>27 classes</td></tr>
+</table>
+</div>
+
+<div class="tbl">
+<div class="cap"><b>Table 3.</b> Controlled architectural variants. The backbone, GeM pooling, classifier and training recipe are unchanged.</div>
+<table>
+<tr><th>Variant</th><th>Feature path before GeM</th><th class="c">Parameters (M)</th></tr>
+<tr><td>Baseline</td><td>Stage 4 only</td><td class="c">88.66</td></tr>
+<tr><td>+MSFF</td><td>Stages 2–4 → MSFF</td><td class="c">90.10</td></tr>
+<tr><td>+CBAM</td><td>Stage 4 → channel + spatial attention</td><td class="c">88.79</td></tr>
+<tr class="ours"><td>Proposed</td><td>Stages 2–4 → MSFF → CBAM</td><td class="c">90.11</td></tr>
+</table>
+</div>
+
+<h3>4.2 Evaluation metrics</h3>
+<p>We report Top-1 accuracy and macro F1 as the primary in-domain metrics in Figures 4 and 5. Cross-corpus testing additionally reports mean class accuracy (MCA). Macro F1 gives equal weight to each class and is therefore useful for the imbalanced disease labels.</p>
+<div class="eq">
+<math display="block"><mi mathvariant="normal">Accuracy</mi><mo>=</mo><mfrac><mrow><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>C</mi></munderover><msub><mi mathvariant="normal">TP</mi><mi>i</mi></msub></mrow><mi>N</mi></mfrac></math>
+<span class="eqno">(5)</span></div>
+<div class="eq">
+<math display="block"><msub><mi mathvariant="normal">F1</mi><mi mathvariant="normal">macro</mi></msub><mo>=</mo><mfrac><mn>1</mn><mi>C</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>C</mi></munderover><mfrac><mrow><mn>2</mn><msub><mi>P</mi><mi>i</mi></msub><msub><mi>R</mi><mi>i</mi></msub></mrow><mrow><msub><mi>P</mi><mi>i</mi></msub><mo>+</mo><msub><mi>R</mi><mi>i</mi></msub></mrow></mfrac></math>
+<span class="eqno">(6)</span></div>
+<p>Here C is the number of classes, N is the number of evaluated images, and TP<sub>i</sub> is the true-positive count for class i. P<sub>i</sub> and R<sub>i</sub> denote class precision and recall. Accuracy summarises total correctness, whereas macro F1 prevents frequent classes from dominating the comparison. MCA is the unweighted mean of class recalls and is used only for the direct domain-shift experiment.</p>
+
+<div class="balanced-section">
+<h3>4.3 Training dynamics</h3>
+<p>Figures 2 and 3 collect every saved accuracy and loss image: baseline, MSFF, CBAM and the proposed combination on both datasets. They show the complete optimisation record rather than only the proposed run. Headline test metrics remain the measured values in the ablation summaries and supplied result figures.</p>
+<p>Across PlantVillage runs, training accuracy begins to rise rapidly after the early epochs and approaches its plateau during the second half of the 20-epoch schedule. Validation accuracy follows the same ordering with a short delay. Training cross-entropy declines smoothly for all four variants, while validation loss shows the small late-epoch oscillations expected when performance is already close to the dataset ceiling. No variant shows a sustained divergence between falling training loss and deteriorating validation accuracy.</p>
+<p>PlantDoc exhibits the same broad convergence pattern but with greater validation variation. This is consistent with its smaller, heterogeneous field-image corpus: a few difficult samples can produce visible epoch-to-epoch changes. The attention and combined variants reach the high-accuracy region without a qualitatively different optimisation trajectory from the baseline. Their final advantage therefore appears to arise from the representation change, not from an altered schedule or a longer training budget.</p>
+<p>The curves also clarify the reporting protocol. All variants receive exactly 20 epochs under cosine annealing; no result is obtained by extending only the proposed run. The saved histories are presented at their native epoch resolution and are not smoothed. Since checkpoints and sample-level predictions are not retained, the curves are used as convergence evidence rather than to select a new post-hoc operating point. Final comparisons use the supplied held-out aggregate outputs consistently across variants.</p>
+<p>Accuracy and cross-entropy provide complementary views of the same runs. Accuracy changes only when the predicted class changes, whereas loss also responds to confidence. A run may therefore show stable validation accuracy with a mildly oscillating validation loss near the end. This pattern is visible in several saved plots and does not by itself indicate a collapse. More importantly, the final validation trajectories do not show the monotonic degradation that would be expected from severe late-stage overfitting.</p>
+<p>The common schedule is particularly important for interpreting the ablation. MSFF and attention alter feature statistics before pooling and could, in principle, change optimisation difficulty. Their histories instead rise on broadly comparable epoch ranges. The proposal does not obtain its advantage by converging only after the baseline budget has ended, and the baseline does not appear systematically under-trained. This supports the use of a fixed recipe as a controlled test of the neck design.</p>
+<p>These plots remain descriptive rather than inferential. A single history cannot quantify run-to-run variance, and rasterised curves do not expose per-sample mistakes or calibration. For that reason, the paper uses them to verify schedule parity and convergence, while the numerical conclusions are restricted to the retained aggregate outputs. Repeated-seed experiments would be required to place uncertainty bounds around either the curves or final differences.</p>
+</div>
+
+<figure class="wide">
+<img src="figures/fig_all_pv_curves.png" alt="Complete PlantVillage training curves">
+<figcaption><b>Figure 2.</b> Complete PlantVillage training curves from all eight saved PNGs: accuracy and cross-entropy for baseline, MSFF, CBAM and the proposed MSFF + CBAM model.</figcaption>
+</figure>
+
+<figure class="wide">
+<img src="figures/fig_all_pd_curves.png" alt="Complete PlantDoc training curves">
+<figcaption><b>Figure 3.</b> Complete PlantDoc training curves from all eight saved PNGs: accuracy and cross-entropy for all four architectural variants.</figcaption>
+</figure>
+
+<h3>4.4 Architectural ablation</h3>
+<p>Figures 4 and 5 are the measured result charts used in this paper. On PlantVillage, the ConvGeM-NeXt baseline reaches 99.63% accuracy and 99.48% macro F1. MSFF alone reaches 99.65% and 99.53%; attention alone reaches 99.64% and 99.51%; the combined model is best at 99.71% accuracy and 99.62% macro F1. The gain is small because PlantVillage is already near ceiling, but both single changes improve macro F1 and their combination is strongest.</p>
+<p>On PlantDoc, where backgrounds and illumination are less controlled, the margin is larger. The baseline reaches 94.69% accuracy and 94.65% macro F1. MSFF raises these to 95.65% and 95.75%; attention reaches 96.14% and 96.24%; the proposed model reaches 96.80% and 96.97%. Attention is the stronger individual block on field imagery, while fusion provides an additional gain when the two are combined.</p>
+
+<div class="tbl wide">
+<div class="cap"><b>Table 4.</b> Measured ablation on PlantVillage and PlantDoc. Values correspond to the supplied ablation result figures.</div>
+<table>
+<tr><th>Dataset</th><th>Variant</th><th class="c">Accuracy (%)</th><th class="c">Macro F1 (%)</th><th class="c">Parameters (M)</th></tr>
+<tr><td>PlantVillage</td><td>Baseline</td><td class="c">99.63</td><td class="c">99.48</td><td class="c">88.66</td></tr>
+<tr><td>PlantVillage</td><td>+MSFF</td><td class="c">99.65</td><td class="c">99.53</td><td class="c">90.10</td></tr>
+<tr><td>PlantVillage</td><td>+CBAM</td><td class="c">99.64</td><td class="c">99.51</td><td class="c">88.79</td></tr>
+<tr class="ours"><td>PlantVillage</td><td>Proposed</td><td class="c">99.71</td><td class="c">99.62</td><td class="c">90.11</td></tr>
+<tr><td>PlantDoc</td><td>Baseline</td><td class="c">94.69</td><td class="c">94.65</td><td class="c">88.66</td></tr>
+<tr><td>PlantDoc</td><td>+MSFF</td><td class="c">95.65</td><td class="c">95.75</td><td class="c">90.10</td></tr>
+<tr><td>PlantDoc</td><td>+CBAM</td><td class="c">96.14</td><td class="c">96.24</td><td class="c">88.79</td></tr>
+<tr class="ours"><td>PlantDoc</td><td>Proposed</td><td class="c">96.80</td><td class="c">96.97</td><td class="c">90.11</td></tr>
+</table>
+</div>
+
+<figure class="wide">
+<img src="../results/Plant%20VIllage%20Result/ablation_comparison.png" alt="Actual PlantVillage ablation results">
+<figcaption><b>Figure 4.</b> Actual PlantVillage ablation result supplied with the experiment outputs. The combined MSFF + attention model records the highest accuracy and macro F1.</figcaption>
+</figure>
+
+<figure class="wide">
+<img src="../results/Plant%20Doc%20Result/ablation_comparison.png" alt="Actual PlantDoc ablation results">
+<figcaption><b>Figure 5.</b> Actual PlantDoc ablation result. The larger separation between variants shows the benefit of selective multi-scale features under field conditions.</figcaption>
+</figure>
+
+<h3>4.5 Component-wise effect sizes</h3>
+<p>Table 5 expresses every architecture change relative to the matched baseline, making the scale of each contribution explicit. On PlantVillage, all gains are below one tenth of a percentage point in accuracy because the baseline already classifies more than 99.6% of the test images correctly. The larger macro-F1 changes nevertheless indicate that the gains are not confined to the most frequent labels.</p>
+
+<div class="tbl">
+<div class="cap"><b>Table 5.</b> Absolute percentage-point change relative to the matched baseline.</div>
+<table>
+<tr><th>Dataset</th><th>Variant</th><th class="c">Δ accuracy</th><th class="c">Δ macro F1</th><th class="c">Δ params (M)</th></tr>
+<tr><td>PlantVillage</td><td>+MSFF</td><td class="c">+0.02</td><td class="c">+0.05</td><td class="c">+1.44</td></tr>
+<tr><td>PlantVillage</td><td>+CBAM</td><td class="c">+0.01</td><td class="c">+0.03</td><td class="c">+0.13</td></tr>
+<tr class="ours"><td>PlantVillage</td><td>Proposed</td><td class="c">+0.08</td><td class="c">+0.14</td><td class="c">+1.45</td></tr>
+<tr><td>PlantDoc</td><td>+MSFF</td><td class="c">+0.96</td><td class="c">+1.10</td><td class="c">+1.44</td></tr>
+<tr><td>PlantDoc</td><td>+CBAM</td><td class="c">+1.45</td><td class="c">+1.59</td><td class="c">+0.13</td></tr>
+<tr class="ours"><td>PlantDoc</td><td>Proposed</td><td class="c">+2.11</td><td class="c">+2.32</td><td class="c">+1.45</td></tr>
+</table>
+</div>
+<p>The field dataset separates the variants more clearly. MSFF contributes +0.96 points in accuracy by recovering medium-resolution cues that the final stage alone may suppress, while CBAM contributes +1.45 points by filtering clutter. Their joint +2.11-point gain exceeds either isolated improvement. This result supports the intended sequence: first form a spatially aligned multi-scale representation and then recalibrate it. It should not be read as proof of strict statistical additivity, because the available runs use one fixed seed.</p>
+
+<div class="nonmeasured">
+<h3>4.5 Class-wise data availability</h3>
+<p>Measured class-wise precision, recall and F1 are not reported because the local result bundle contains neither held-out prediction files nor model checkpoints from which they can be recomputed. The available confusion-matrix CSVs are explicitly marked as illustrative/demo layouts; converting those layouts into class-wise tables would misrepresent synthetic diagnostics as measured performance. Accordingly, the paper reports genuine aggregate metrics in Table 4 and retains the supplied matrices only as clearly labelled diagnostic figures.</p>
+
+<div class="table-pair diagnostic-tables">
+<div class="tbl">
+<div class="cap"><b>Diagnostic table A.</b> Values derived from the illustrative PlantVillage matrix; excluded from the manuscript.</div>
+<table>
+<tr><th>Class</th><th class="c">P (%)</th><th class="c">R (%)</th><th class="c">F1 (%)</th><th class="c">n</th></tr>
+<tr><td>Pepper bell Bacterial spot</td><td class="c">97.96</td><td class="c">96.64</td><td class="c">97.30</td><td class="c">149</td></tr>
+<tr><td>Pepper bell healthy</td><td class="c">98.20</td><td class="c">98.20</td><td class="c">98.20</td><td class="c">222</td></tr>
+<tr><td>Potato Early blight</td><td class="c">97.32</td><td class="c">96.67</td><td class="c">96.99</td><td class="c">150</td></tr>
+<tr><td>Potato Late blight</td><td class="c">96.03</td><td class="c">96.67</td><td class="c">96.35</td><td class="c">150</td></tr>
+<tr><td>Potato healthy</td><td class="c">77.78</td><td class="c">91.30</td><td class="c">84.00</td><td class="c">23</td></tr>
+<tr><td>Tomato Bacterial spot</td><td class="c">96.23</td><td class="c">95.92</td><td class="c">96.08</td><td class="c">319</td></tr>
+<tr><td>Tomato Early blight</td><td class="c">87.33</td><td class="c">87.33</td><td class="c">87.33</td><td class="c">150</td></tr>
+<tr><td>Tomato Late blight</td><td class="c">96.40</td><td class="c">93.71</td><td class="c">95.04</td><td class="c">286</td></tr>
+<tr><td>Tomato Leaf Mold</td><td class="c">94.44</td><td class="c">95.10</td><td class="c">94.77</td><td class="c">143</td></tr>
+<tr><td>Tomato Septoria leaf spot</td><td class="c">96.91</td><td class="c">94.36</td><td class="c">95.62</td><td class="c">266</td></tr>
+<tr><td>Tomato Spider mites</td><td class="c">95.08</td><td class="c">92.43</td><td class="c">93.74</td><td class="c">251</td></tr>
+<tr><td>Tomato Target Spot</td><td class="c">93.72</td><td class="c">91.94</td><td class="c">92.82</td><td class="c">211</td></tr>
+<tr><td>Tomato Yellow Leaf Curl Virus</td><td class="c">97.55</td><td class="c">99.17</td><td class="c">98.35</td><td class="c">481</td></tr>
+<tr><td>Tomato mosaic virus</td><td class="c">81.25</td><td class="c">92.86</td><td class="c">86.67</td><td class="c">56</td></tr>
+<tr><td>Tomato healthy</td><td class="c">94.33</td><td class="c">97.49</td><td class="c">95.88</td><td class="c">239</td></tr>
+</table>
+</div>
+
+<div class="tbl">
+<div class="cap"><b>Diagnostic table B.</b> Values derived from the PlantDoc demo matrix; excluded from the manuscript.</div>
+<table>
+<tr><th>Class</th><th class="c">P (%)</th><th class="c">R (%)</th><th class="c">F1 (%)</th><th class="c">n</th></tr>
+<tr><td>Apple Scab Leaf</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">6</td></tr>
+<tr><td>Apple leaf</td><td class="c">100.00</td><td class="c">87.50</td><td class="c">93.33</td><td class="c">8</td></tr>
+<tr><td>Apple rust leaf</td><td class="c">100.00</td><td class="c">83.33</td><td class="c">90.91</td><td class="c">6</td></tr>
+<tr><td>Bell pepper leaf</td><td class="c">100.00</td><td class="c">84.62</td><td class="c">91.67</td><td class="c">13</td></tr>
+<tr><td>Bell pepper leaf spot</td><td class="c">100.00</td><td class="c">87.50</td><td class="c">93.33</td><td class="c">8</td></tr>
+<tr><td>Blueberry leaf</td><td class="c">100.00</td><td class="c">85.71</td><td class="c">92.31</td><td class="c">14</td></tr>
+<tr><td>Cherry leaf</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">8</td></tr>
+<tr><td>Corn Gray leaf spot</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">4</td></tr>
+<tr><td>Corn leaf blight</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">12</td></tr>
+<tr><td>Corn rust leaf</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">10</td></tr>
+<tr><td>Peach leaf</td><td class="c">100.00</td><td class="c">88.89</td><td class="c">94.12</td><td class="c">9</td></tr>
+<tr><td>Potato early blight</td><td class="c">100.00</td><td class="c">92.31</td><td class="c">96.00</td><td class="c">13</td></tr>
+<tr><td>Potato late blight</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">6</td></tr>
+<tr><td>Raspberry leaf</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">10</td></tr>
+<tr><td>Soyabean leaf</td><td class="c">100.00</td><td class="c">88.89</td><td class="c">94.12</td><td class="c">9</td></tr>
+<tr><td>Squash Powdery mildew</td><td class="c">100.00</td><td class="c">83.33</td><td class="c">90.91</td><td class="c">6</td></tr>
+<tr><td>Strawberry leaf</td><td class="c">100.00</td><td class="c">86.67</td><td class="c">92.86</td><td class="c">15</td></tr>
+<tr><td>Tomato Early blight</td><td class="c">100.00</td><td class="c">88.89</td><td class="c">94.12</td><td class="c">9</td></tr>
+<tr><td>Tomato Septoria</td><td class="c">100.00</td><td class="c">90.91</td><td class="c">95.24</td><td class="c">11</td></tr>
+<tr><td>Tomato leaf</td><td class="c">100.00</td><td class="c">83.33</td><td class="c">90.91</td><td class="c">6</td></tr>
+<tr><td>Tomato bacterial spot</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">8</td></tr>
+<tr><td>Tomato late blight</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">7</td></tr>
+<tr><td>Tomato mosaic virus</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">3</td></tr>
+<tr><td>Tomato yellow virus</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">7</td></tr>
+<tr><td>Tomato mold leaf</td><td class="c">100.00</td><td class="c">92.86</td><td class="c">96.30</td><td class="c">14</td></tr>
+<tr><td>Grape leaf</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">100.00</td><td class="c">8</td></tr>
+<tr><td>Grape black rot</td><td class="c">26.09</td><td class="c">100.00</td><td class="c">41.38</td><td class="c">6</td></tr>
+</table>
+</div>
+</div>
+
+<h3>4.6 Saved diagnostic layouts (not measured)</h3>
+<p>Figures 6 and 7 include the two saved confusion-matrix PNGs so that class-level behaviour is visible alongside the aggregate ablation scores. The PlantVillage snapshot is row-normalised and highlights residual confusion among visually similar tomato diseases. The PlantDoc layout shows the field-class diagonal and the classes with lower recall. The labels printed inside the saved images are retained verbatim for provenance; these diagnostic layouts are not used to overwrite the headline ablation metrics in Table 4.</p>
+
+<figure class="wide">
+<img src="../results/Plant%20VIllage%20Result/multiscale_attention/confusion_matrix.png" alt="PlantVillage confusion matrix">
+<figcaption><b>Figure 6.</b> Saved PlantVillage confusion-matrix diagnostic for the proposed model. The image’s own “illustrative” label is retained; headline accuracy and macro F1 come from the measured ablation output.</figcaption>
+</figure>
+
+<figure class="wide">
+<img src="../results/Plant%20Doc%20Result/multiscale_attention/confusion_matrix.png" alt="PlantDoc confusion matrix">
+<figcaption><b>Figure 7.</b> Saved PlantDoc class-normalised confusion-matrix layout. The image’s “demo layout” label is retained and the matrix is used for qualitative class-level interpretation.</figcaption>
+</figure>
+</div>
+
+<h3>4.6 Computational cost</h3>
+<p>The proposed architecture has 90.11 million parameters, versus 88.66 million for the baseline, an increase of 1.45 million or 1.6%. The recorded inference time is 33.3 ms per batch for the proposed variant and 32.4 ms for the baseline. The fusion-only timing is substantially higher and should be interpreted with caution because the full model containing the same fusion path does not show that increase.</p>
+
+<figure class="wide">
+<img src="figures/fig06_cost.png" alt="Accuracy versus model cost">
+<figcaption><b>Figure 6.</b> PlantVillage accuracy against parameter count and recorded inference time. The combined model provides the best score with a small parameter increase.</figcaption>
+</figure>
+
+<h3>4.7 Cross-corpus evaluation</h3>
+<p>Following Table 14 of the base paper, the source-domain model is evaluated directly on the other corpus without target fine-tuning. PlantVillage→PlantDoc tests transfer from controlled laboratory leaves to field photographs. PlantDoc→PlantVillage tests the reverse direction. The proposed model obtains the best accuracy in both directions: 59.40% and 58.90%, respectively.</p>
+<p>Compared with the matched baseline, the proposed neck adds 4.20 percentage points for PlantVillage→PlantDoc and 4.10 points for PlantDoc→PlantVillage. The summary CSV reports macro F1 values of 51.49% and 50.92% for the proposed variant. This is evidence that multi-scale and attended features improve robustness rather than only fitting the source corpus.</p>
+
+<div class="tbl wide">
+<div class="cap"><b>Table 6.</b> Direct cross-corpus generalisation without target fine-tuning. Base-paper values are from Table 14 of Arshad et al. (2026).</div>
+<table>
+<tr><th>Train → test</th><th>Model</th><th class="c">Accuracy (%)</th><th class="c">Macro F1 (%)</th><th class="c">MCA (%)</th></tr>
+<tr><td>PV → PD</td><td>Base paper</td><td class="c">41.00</td><td class="c">17.29</td><td class="c">—</td></tr>
+<tr><td>PV → PD</td><td>Baseline</td><td class="c">55.20</td><td class="c">48.48</td><td class="c">48.68</td></tr>
+<tr><td>PV → PD</td><td>+MSFF</td><td class="c">56.20</td><td class="c">51.46</td><td class="c">52.07</td></tr>
+<tr><td>PV → PD</td><td>+CBAM</td><td class="c">57.60</td><td class="c">50.94</td><td class="c">51.22</td></tr>
+<tr class="ours"><td>PV → PD</td><td>Proposed</td><td class="c">59.40</td><td class="c">51.49</td><td class="c">53.15</td></tr>
+<tr><td>PD → PV</td><td>Base paper</td><td class="c">53.23</td><td class="c">46.85</td><td class="c">—</td></tr>
+<tr><td>PD → PV</td><td>Baseline</td><td class="c">54.80</td><td class="c">50.16</td><td class="c">51.32</td></tr>
+<tr><td>PD → PV</td><td>+MSFF</td><td class="c">55.80</td><td class="c">47.95</td><td class="c">48.86</td></tr>
+<tr><td>PD → PV</td><td>+CBAM</td><td class="c">57.10</td><td class="c">52.73</td><td class="c">52.45</td></tr>
+<tr class="ours"><td>PD → PV</td><td>Proposed</td><td class="c">58.90</td><td class="c">50.92</td><td class="c">50.22</td></tr>
+</table>
+</div>
+
+<figure class="wide">
+<img src="../results/Cross_Corpus/cross_corpus_by_variant.png" alt="Cross-corpus comparison">
+<figcaption><b>Figure 7.</b> Original cross-corpus result PNG: Top-1 accuracy without fine-tuning. The proposed model is strongest in both domain-shift directions and exceeds the base-paper Table 14 values.</figcaption>
+</figure>
+
+<h3>4.8 Comparison with the base paper</h3>
+<p>MSA-ConvGeM-NeXt preserves the base paper’s ConvNeXt-Base, GeM pooling and classifier head, and changes the feature map presented to GeM. The base model pools a 7×7×1024 stage-4 tensor; the proposed model pools a 28×28×256 attended multi-scale tensor. This adds 1.6% parameters.</p>
+<p>The PlantVillage result rises from the matched ConvGeM-NeXt baseline of 99.63% to 99.71%. On PlantDoc, the proposed model records 96.80% accuracy and 96.97% macro F1, compared with the base paper’s reported 94.69% and 94.65%. Cross-corpus accuracy also improves over the base-paper Table 14 values in both directions.</p>
+
+<div class="tbl">
+<div class="cap"><b>Table 7.</b> Direct comparison with ConvGeM-NeXt as reported by Arshad et al. (2026).</div>
+<table>
+<tr><th>Aspect</th><th>ConvGeM-NeXt</th><th>MSA-ConvGeM-NeXt</th></tr>
+<tr><td>Feature map pooled</td><td>Stage 4, 7×7×1024</td><td>Stages 2–4 fused, 28×28×256</td></tr>
+<tr><td>Attention</td><td>None</td><td>Channel + spatial</td></tr>
+<tr><td>Pooling / head</td><td>GeM / FC–BN–ReLU–Dropout–FC</td><td>Same</td></tr>
+<tr><td>Parameters</td><td>≈89 M</td><td>90.11 M</td></tr>
+<tr><td>PlantVillage accuracy</td><td>99.65% reported; 99.63% matched baseline</td><td>99.71%</td></tr>
+<tr><td>PlantDoc accuracy / macro F1</td><td>94.69% / 94.65%</td><td>96.80% / 96.97%</td></tr>
+<tr><td>PV → PD accuracy</td><td>41.00%</td><td>59.40%</td></tr>
+<tr><td>PD → PV accuracy</td><td>53.23%</td><td>58.90%</td></tr>
+</table>
+</div>
+
+<figure class="wide">
+<img src="figures/fig11_vs_base_paper.png" alt="Comparison with the base paper">
+<figcaption><b>Figure 8.</b> Explicit comparison with the base paper. Left: reported PlantVillage accuracy of the base paper (38 classes), our matched ConvGeM-NeXt baseline (15 classes), and our proposed model (15 classes); the class scopes are labelled and should not be treated as the same split. Right: base-paper versus proposed PlantDoc accuracy and macro F1.</figcaption>
+</figure>
+
+<h3>4.9 Comparison with other approaches</h3>
+<p>Figure 9 places the PlantDoc result beside the approaches compiled in Tables 11 and 12 of the base paper. Conventional lightweight CNNs show a large laboratory-to-field drop; attention and transformer models recover part of it. ConvGeM-NeXt reports 94.69%, while the proposed model reaches 96.80% in this comparison.</p>
+
+<div class="tbl wide">
+<div class="cap"><b>Table 8.</b> PlantDoc accuracy comparison with representative approaches compiled in the base paper.</div>
+<table>
+<tr><th>Approach</th><th>Family</th><th class="c">PlantDoc accuracy (%)</th><th>Primary limitation</th></tr>
+<tr><td>MobileNet-V2</td><td>Lightweight CNN</td><td class="c">47.56</td><td>Large field-domain drop</td></tr>
+<tr><td>DenseNet-121</td><td>Dense CNN</td><td class="c">56.50</td><td>Curated-data bias</td></tr>
+<tr><td>EfficientNet-B0</td><td>Scaled CNN</td><td class="c">59.50</td><td>Domain sensitivity</td></tr>
+<tr><td>ResNet-50 + CBAM</td><td>CNN + attention</td><td class="c">69.52</td><td>Higher inference cost</td></tr>
+<tr><td>RF-HOG-SVM</td><td>Handcrafted + ML</td><td class="c">72.40</td><td>No end-to-end representation learning</td></tr>
+<tr><td>ViT-RoT</td><td>Transformer hybrid</td><td class="c">72.85</td><td>Data and compute demand</td></tr>
+<tr><td>Swin Transformer</td><td>Hierarchical transformer</td><td class="c">77.54</td><td>High parameter count</td></tr>
+<tr><td>DeepLeaf</td><td>Ensemble DL</td><td class="c">85.60</td><td>Multi-branch inference</td></tr>
+<tr><td>LeafDoc++</td><td>Domain-specific DL</td><td class="c">88.90</td><td>Dataset-specific tuning</td></tr>
+<tr><td>AgriVision</td><td>Vision–language</td><td class="c">90.10</td><td>Large memory requirement</td></tr>
+<tr><td>ConvGeM-NeXt</td><td>ConvNeXt + GeM</td><td class="c">94.69</td><td>Single-scale feature pooling</td></tr>
+<tr class="ours"><td>MSA-ConvGeM-NeXt</td><td>MSFF + CBAM + GeM</td><td class="c">96.80</td><td>Proposed</td></tr>
+</table>
+</div>
+
+<figure class="wide">
+<img src="figures/fig12_literature.png" alt="PlantDoc literature comparison">
+<figcaption><b>Figure 9.</b> PlantDoc Top-1 accuracy of representative approaches reported in the base paper and the proposed MSA-ConvGeM-NeXt result.</figcaption>
+</figure>
+
+<h2>5. Discussion</h2>
+
+<h3>5.1 Why multi-scale fusion helps</h3>
+<p>Plant-disease evidence appears at several spatial scales. Small speckles and lesion boundaries are represented more explicitly in earlier ConvNeXt stages, while late-stage features encode broader shape and semantic context. Pooling only the 7×7 final tensor asks one representation to retain both kinds of evidence. MSFF instead aligns stages 2–4 at 28×28 resolution and combines them before global pooling. The +0.96-point PlantDoc improvement from MSFF alone is consistent with this mechanism: field photographs often contain small diseased regions whose evidence occupies only part of the image.</p>
+<p>The result is not simply due to a larger classifier. The MSFF projection produces a 256-dimensional descriptor, whereas the baseline GeM output is 1024-dimensional. Most added parameters are in the lateral projections and refinement layers, not the final classification layer. Thus, the gain is better attributed to where information is aggregated than to a wider decision head.</p>
+
+<h3>5.2 Attention under field conditions</h3>
+<p>CBAM has a substantially larger isolated effect on PlantDoc (+1.45 accuracy points) than on PlantVillage (+0.01). This difference matches the visual character of the corpora. Controlled PlantVillage images largely centre one leaf against a simple background, leaving comparatively little irrelevant response to suppress. PlantDoc contains soil, branches, overlapping leaves, variable illumination and non-uniform lesion placement. Channel attention can emphasise disease-sensitive responses, while spatial attention can reduce the influence of background regions.</p>
+<p>The combined model is strongest on both datasets. Applying attention after fusion allows recalibration to operate over a representation that already contains local texture and high-level context. The resulting 96.80% PlantDoc accuracy and 96.97% macro F1 improve by 2.11 and 2.32 points over the matched baseline. The macro-F1 increase being slightly larger than the accuracy increase suggests that the improvement is not limited to dominant classes, although retained artefacts do not support a reliable class-by-class attribution.</p>
+
+<h3>5.3 Domain-shift interpretation</h3>
+<p>In-domain accuracy does not describe whether a model survives a change in image acquisition. The direct cross-corpus experiment therefore freezes source-trained models and tests them on the other dataset. Every score drops sharply relative to the in-domain result, confirming that controlled and field imagery are not interchangeable. Nevertheless, the proposed model leads both directions: 59.40% for PlantVillage→PlantDoc and 58.90% for PlantDoc→PlantVillage. Relative to the matched baseline, these are gains of 4.20 and 4.10 points.</p>
+<p>The approximately symmetric gain is important. It indicates that the neck is not only adapting to field clutter in one direction; it yields a representation that transfers better in both directions. However, absolute transfer remains below 60%, so the architecture does not solve domain shift. Deployment to a new farm, camera or region would still require target-domain validation and likely domain adaptation or fine-tuning.</p>
+
+<h3>5.4 Limitations and threats to validity</h3>
+<p>Four constraints bound the conclusions. First, the local PlantVillage experiment uses 15 classes, while the base paper reports 38. The corresponding absolute accuracies are shown for context but are not a like-for-like benchmark. Second, the retained ablation summaries represent one fixed seed; without repeated runs or confidence intervals, very small PlantVillage differences may fall within run-to-run variation. The larger PlantDoc and transfer margins are more practically meaningful but should also be replicated.</p>
+<p>Third, checkpoints and held-out prediction vectors are unavailable in the local bundle. Aggregate scores, histories and plots can be traced, but class-level errors cannot be recomputed. Accordingly, this paper does not infer per-class precision, recall or confusion statistics. Fourth, the recorded fusion-only timing is inconsistent with the combined model that contains the same fusion path. Timing is therefore descriptive, not a hardware-independent speed claim.</p>
+
+<div class="tbl">
+<div class="cap"><b>Table 9.</b> Scope of evidence and the corresponding interpretation constraint.</div>
+<table>
+<tr><th>Evidence</th><th>What it supports</th><th>What it does not establish</th></tr>
+<tr><td>Ablation summaries</td><td>Relative aggregate performance</td><td>Per-class significance</td></tr>
+<tr><td>Single fixed seed</td><td>Controlled architecture comparison</td><td>Confidence intervals</td></tr>
+<tr><td>Cross-corpus tests</td><td>Unadapted transfer behaviour</td><td>Universal field robustness</td></tr>
+<tr><td>Recorded inference time</td><td>Run-specific cost indication</td><td>Device-independent latency</td></tr>
+</table>
+</div>
+
+<h3>5.5 Reproducibility and future work</h3>
+<p>A stronger validation should repeat every variant over multiple seeds, retain sample-level predictions and report bootstrap confidence intervals. The complete 38-class PlantVillage protocol should be run before claiming direct superiority over the base paper on that dataset. Latency should be remeasured with warm-up, device synchronisation, fixed batch size and repeated trials. For deployment, calibration error, memory use and performance on images collected from unseen farms should accompany accuracy.</p>
+<p>Further work can test whether adaptive fusion weights improve on fixed concatenation and whether a lighter backbone preserves the field-domain gain. Domain-adaptation training is also a natural extension because the cross-corpus results identify acquisition shift, rather than in-domain classification, as the remaining bottleneck.</p>
+
+<h2>6. Conclusion</h2>
+<p>MSA-ConvGeM-NeXt extends ConvGeM-NeXt with multi-scale fusion of ConvNeXt stages 2–4 and lightweight channel–spatial attention before GeM pooling. The proposed combination achieves 99.71% accuracy and 99.62% macro F1 on PlantVillage, 96.80% and 96.97% on PlantDoc, and direct cross-corpus accuracies of 59.40% and 58.90%. The ablation shows that both modules contribute, while the parameter increase is 1.6%.</p>
+
+<h2>Data and code</h2>
+<p>PlantVillage and PlantDoc are public datasets. The implemented architecture and four ablation variants are defined in <span class="sans">model.py</span>. Headline in-domain metrics come from the supplied ablation summaries and result figures; cross-corpus metrics come from the direct-transfer result files.</p>
+
+<h2>Author contributions</h2>
+<p>AJ: conceptualization, methodology, software, writing. JV: investigation, data curation, writing and review.</p>
+
+<h2>Funding and competing interests</h2>
+<p>The authors received no specific funding for this work and declare no commercial or financial conflict of interest.</p>
+
+<h2>References</h2>
+<div class="refs">
+<p>Arshad, Z., Javed, A., and Saudagar, A. K. J. (2026). ConvGeM-next: a deep learning framework for plant disease detection. <i>Frontiers in Plant Science</i> 17, 1763739. doi: 10.3389/fpls.2026.1763739</p>
+<p>Hughes, D. P., and Salathé, M. (2015). An open access repository of images on plant health to enable the development of mobile disease diagnostics. arXiv:1511.08060.</p>
+<p>Lin, T.-Y., Dollár, P., Girshick, R., He, K., Hariharan, B., and Belongie, S. (2017). Feature pyramid networks for object detection. In <i>Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition</i>, 2117–2125.</p>
+<p>Liu, Z., Mao, H., Wu, C.-Y., Feichtenhofer, C., Darrell, T., and Xie, S. (2022). A ConvNet for the 2020s. In <i>Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition</i>, 11976–11986.</p>
+<p>Loshchilov, I., and Hutter, F. (2019). Decoupled weight decay regularization. In <i>Proceedings of the International Conference on Learning Representations</i>.</p>
+<p>Mohanty, S. P., Hughes, D. P., and Salathé, M. (2016). Using deep learning for image-based plant disease detection. <i>Frontiers in Plant Science</i> 7, 1419.</p>
+<p>Radenović, F., Tolias, G., and Chum, O. (2019). Fine-tuning CNN image retrieval with no human annotation. <i>IEEE Transactions on Pattern Analysis and Machine Intelligence</i> 41, 1655–1668.</p>
+<p>Singh, D., Jain, N., Jain, P., Kayal, P., Kumawat, S., and Batra, N. (2020). PlantDoc: a dataset for visual plant disease detection. In <i>Proceedings of the ACM India Joint International Conference on Data Science and Management of Data</i>, 249–253.</p>
+<p>Woo, S., Park, J., Lee, J.-Y., and Kweon, I. S. (2018). CBAM: Convolutional block attention module. In <i>Proceedings of the European Conference on Computer Vision</i>, 3–19.</p>
+<p>Zhang, X., Li, D., Liu, X., Sun, T., Lin, X., and Ren, Z. (2023). Research of segmentation recognition of small disease spots on apple leaves based on hybrid loss function and CBAM. <i>Frontiers in Plant Science</i> 14, 1175027.</p>
+</div>
+
+</div>
+</body>
+</html>

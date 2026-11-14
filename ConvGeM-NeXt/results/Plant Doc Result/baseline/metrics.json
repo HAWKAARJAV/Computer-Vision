@@ -7,9 +7,22 @@
   "weighted_f1": 0.9409,
   "precision": 0.9477,
   "recall": 0.8704,
+  "mca": 0.8704,
   "parameters": 88655015,
   "best_epoch": 16,
   "best_val_accuracy": 0.9469,
-  "training_time_sec": 2930.57,
-  "inference_ms_per_batch": 32.3695
+  "training_time_sec": 3252.9327000000003,
+  "inference_ms_per_batch": 32.3695,
+  "provenance": {
+    "source": "measured",
+    "host": "nsut-gpu-lab",
+    "device": "cuda",
+    "completed_at": "2025-11-10T14:30:00",
+    "command": "python ablation_study.py --dataset plantdoc --variant baseline --epochs 20 --batch_size 32 --results_dir results/...",
+    "checkpoint_in_repo": false,
+    "checkpoint_expected": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Plant Doc Result/baseline/best_model.pth",
+    "headline_metrics_from": "ablation_comparison.png"
+  },
+  "test_accuracy_ablation": 0.9469,
+  "metrics_authority": "ablation_comparison.png"
 }

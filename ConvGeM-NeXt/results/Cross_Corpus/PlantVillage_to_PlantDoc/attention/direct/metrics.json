@@ -10,5 +10,14 @@
   "recall": 0.5201621544955242,
   "mca": 0.5174010661148026,
   "n_test": 236,
-  "mapped_target_classes": 28
+  "mapped_target_classes": 28,
+  "provenance": {
+    "source": "measured",
+    "host": "nsut-gpu-lab",
+    "device": "cuda",
+    "completed_at": "2025-11-12T17:54:00",
+    "command": "python cross_corpus.py --source plantvillage --target plantdoc --variant attention --protocol direct --source_checkpoint /Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Plant VIllage Result/attention/best_model.pth",
+    "source_checkpoint": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Plant VIllage Result/attention/best_model.pth",
+    "checkpoint_in_repo": false
+  }
 }

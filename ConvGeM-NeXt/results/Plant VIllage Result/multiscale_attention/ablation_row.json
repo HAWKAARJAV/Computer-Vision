@@ -1,0 +1,12 @@
+{
+  "Variant": "multiscale_attention",
+  "Accuracy": 0.9971,
+  "Macro_F1": 0.9962,
+  "Weighted_F1": 0.997432,
+  "Precision": 1.0,
+  "Recall": 0.988173,
+  "Parameters": 90106394,
+  "Best_Epoch": 18,
+  "Training_Time": 2451.69,
+  "Inference_ms": 33.3429
+}

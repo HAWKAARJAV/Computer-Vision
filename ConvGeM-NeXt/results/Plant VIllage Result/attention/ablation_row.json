@@ -1,0 +1,12 @@
+{
+  "Variant": "attention",
+  "Accuracy": 0.9964,
+  "Macro_F1": 0.9951,
+  "Weighted_F1": 0.992294,
+  "Precision": 0.997039,
+  "Recall": 0.989859,
+  "Parameters": 88787274,
+  "Best_Epoch": 15,
+  "Training_Time": 2822.1,
+  "Inference_ms": 30.9705
+}

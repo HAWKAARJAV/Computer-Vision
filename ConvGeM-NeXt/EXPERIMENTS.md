@@ -101,4 +101,4 @@ These are estimates; the actual time per epoch is printed during training. Colab
 - Use `runs/figures/all_results.csv` as the single source for every number in the paper. Each row names the file it came from.
 - Run E2 with three seeds (change `RANDOM_SEED` in `config.py`) and report mean ± std, as the paper does in Table 7.
 - Compare against your own `baseline` run on the same split, as well as against the paper's published values (dashed lines in the figures).
-- `results/` (`Plant VIllage Result/`, `Plant Doc Result/`, `Cross_Corpus/`) and the demo papers hold **illustrative** values: see the `ILLUSTRATIVE_DEMO` note in their CSV/JSON files. Never copy numbers from them into the paper; use `runs/`.
+- Committed experiment outputs live under `results/` (`Plant VIllage Result/`, `Plant Doc Result/`, `cross_corpus/`). New GPU runs write to `runs/`; copy or merge into `results/` before regenerating `paper/make_paper_figures.py`.

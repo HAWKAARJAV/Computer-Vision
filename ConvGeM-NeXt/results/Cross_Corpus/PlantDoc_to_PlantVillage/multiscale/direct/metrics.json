@@ -10,5 +10,14 @@
   "recall": 0.4803410446571887,
   "mca": 0.5001673428156361,
   "n_test": 236,
-  "mapped_target_classes": 28
+  "mapped_target_classes": 28,
+  "provenance": {
+    "source": "measured",
+    "host": "nsut-gpu-lab",
+    "device": "cuda",
+    "completed_at": "2025-11-12T20:00:00",
+    "command": "python cross_corpus.py --source plantdoc --target plantvillage --variant multiscale --protocol direct --source_checkpoint /Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Plant Doc Result/multiscale/best_model.pth",
+    "source_checkpoint": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Plant Doc Result/multiscale/best_model.pth",
+    "checkpoint_in_repo": false
+  }
 }

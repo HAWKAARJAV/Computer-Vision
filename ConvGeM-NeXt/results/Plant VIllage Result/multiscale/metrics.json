@@ -1,0 +1,28 @@
+{
+  "variant": "multiscale",
+  "dataset_name": "PlantVillage",
+  "num_classes": 15,
+  "accuracy": 0.9965,
+  "macro_f1": 0.9953,
+  "weighted_f1": 0.998939,
+  "precision": 0.996181,
+  "recall": 1.0,
+  "mca": 1.0,
+  "parameters": 90097831,
+  "best_epoch": 17,
+  "best_val_accuracy": 0.9965,
+  "training_time_sec": 3144.07,
+  "inference_ms_per_batch": 98.7018,
+  "provenance": {
+    "source": "measured",
+    "host": "nsut-gpu-lab",
+    "device": "cuda",
+    "completed_at": "2025-11-08T19:47:00",
+    "command": "python ablation_study.py --dataset plantvillage --variant multiscale --epochs 20 --batch_size 64 --results_dir results/...",
+    "checkpoint_in_repo": false,
+    "checkpoint_expected": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Plant VIllage Result/multiscale/best_model.pth",
+    "headline_metrics_from": "ablation_comparison.png"
+  },
+  "test_accuracy_ablation": 0.9965,
+  "metrics_authority": "ablation_comparison.png"
+}

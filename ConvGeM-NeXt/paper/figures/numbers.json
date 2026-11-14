@@ -3,13 +3,13 @@
   "pv_cm_mca": 0.9465325683807458,
   "pv_cm_n": 3096,
   "pv_per_class": {
-    "Pepper Bacterial spot": {
+    "Pepper  bell Bacterial spot": {
       "precision": 0.9795918367346939,
       "recall": 0.9664429530201343,
       "f1": 0.9729729729729729,
       "support": 149
     },
-    "Pepper healthy": {
+    "Pepper  bell healthy": {
       "precision": 0.9819819819819819,
       "recall": 0.9819819819819819,
       "f1": 0.9819819819819819,
@@ -63,25 +63,25 @@
       "f1": 0.9561904761904761,
       "support": 266
     },
-    "Tomato Spider mites": {
+    "Tomato Spider mites Two spotted spider mite": {
       "precision": 0.9508196721311475,
       "recall": 0.9243027888446215,
       "f1": 0.9373737373737373,
       "support": 251
     },
-    "Tomato Target Spot": {
+    "Tomato  Target Spot": {
       "precision": 0.9371980676328503,
       "recall": 0.919431279620853,
       "f1": 0.9282296650717703,
       "support": 211
     },
-    "Tomato YLC virus": {
+    "Tomato  Tomato YellowLeaf  Curl Virus": {
       "precision": 0.9754601226993865,
       "recall": 0.9916839916839917,
       "f1": 0.9835051546391753,
       "support": 481
     },
-    "Tomato mosaic virus": {
+    "Tomato  Tomato mosaic virus": {
       "precision": 0.8125,
       "recall": 0.9285714285714286,
       "f1": 0.8666666666666666,

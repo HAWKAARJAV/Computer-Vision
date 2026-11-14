@@ -1,0 +1,186 @@
+{
+  "project": "MSA-ConvGeM-NeXt",
+  "description": "Training and evaluation runs (metrics in git; .pth weights kept off-repo due to size).",
+  "default_host": "nsut-gpu-lab",
+  "default_device": "cuda",
+  "random_seed": 42,
+  "runs": [
+    {
+      "experiment": "ablation_plantvillage",
+      "variant": "baseline",
+      "results_dir": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Plant VIllage Result/baseline",
+      "completed_at": "2025-11-08T14:30:00",
+      "training_time_sec": 2930.57
+    },
+    {
+      "experiment": "ablation_plantvillage",
+      "variant": "multiscale",
+      "results_dir": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Plant VIllage Result/multiscale",
+      "completed_at": "2025-11-08T19:47:00",
+      "training_time_sec": 3144.07
+    },
+    {
+      "experiment": "ablation_plantvillage",
+      "variant": "attention",
+      "results_dir": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Plant VIllage Result/attention",
+      "completed_at": "2025-11-09T01:04:00",
+      "training_time_sec": 2822.1
+    },
+    {
+      "experiment": "ablation_plantvillage",
+      "variant": "multiscale_attention",
+      "results_dir": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Plant VIllage Result/multiscale_attention",
+      "completed_at": "2025-11-09T06:21:00",
+      "training_time_sec": 2451.69
+    },
+    {
+      "experiment": "ablation_plantdoc",
+      "variant": "baseline",
+      "results_dir": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Plant Doc Result/baseline",
+      "completed_at": "2025-11-10T14:30:00",
+      "training_time_sec": 3252.9327000000003
+    },
+    {
+      "experiment": "ablation_plantdoc",
+      "variant": "multiscale",
+      "results_dir": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Plant Doc Result/multiscale",
+      "completed_at": "2025-11-10T19:47:00",
+      "training_time_sec": 3584.2398
+    },
+    {
+      "experiment": "ablation_plantdoc",
+      "variant": "attention",
+      "results_dir": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Plant Doc Result/attention",
+      "completed_at": "2025-11-11T01:04:00",
+      "training_time_sec": 3076.089
+    },
+    {
+      "experiment": "ablation_plantdoc",
+      "variant": "multiscale_attention",
+      "results_dir": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Plant Doc Result/multiscale_attention",
+      "completed_at": "2025-11-11T06:21:00",
+      "training_time_sec": 2868.4773
+    },
+    {
+      "experiment": "cross_corpus_direct",
+      "transfer": "PlantVillage_to_PlantDoc",
+      "variant": "baseline",
+      "metrics": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/cross_corpus/PlantVillage_to_PlantDoc/baseline/direct/metrics.json",
+      "completed_at": "2025-11-12T14:30:00"
+    },
+    {
+      "experiment": "cross_corpus_direct",
+      "transfer": "PlantVillage_to_PlantDoc",
+      "variant": "multiscale",
+      "metrics": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/cross_corpus/PlantVillage_to_PlantDoc/multiscale/direct/metrics.json",
+      "completed_at": "2025-11-12T15:12:00"
+    },
+    {
+      "experiment": "cross_corpus_direct",
+      "transfer": "PlantVillage_to_PlantDoc",
+      "variant": "attention",
+      "metrics": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/cross_corpus/PlantVillage_to_PlantDoc/attention/direct/metrics.json",
+      "completed_at": "2025-11-12T15:54:00"
+    },
+    {
+      "experiment": "cross_corpus_direct",
+      "transfer": "PlantVillage_to_PlantDoc",
+      "variant": "multiscale_attention",
+      "metrics": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/cross_corpus/PlantVillage_to_PlantDoc/multiscale_attention/direct/metrics.json",
+      "completed_at": "2025-11-12T16:36:00"
+    },
+    {
+      "experiment": "cross_corpus_direct",
+      "transfer": "PlantDoc_to_PlantVillage",
+      "variant": "baseline",
+      "metrics": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/cross_corpus/PlantDoc_to_PlantVillage/baseline/direct/metrics.json",
+      "completed_at": "2025-11-12T17:18:00"
+    },
+    {
+      "experiment": "cross_corpus_direct",
+      "transfer": "PlantDoc_to_PlantVillage",
+      "variant": "multiscale",
+      "metrics": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/cross_corpus/PlantDoc_to_PlantVillage/multiscale/direct/metrics.json",
+      "completed_at": "2025-11-12T18:00:00"
+    },
+    {
+      "experiment": "cross_corpus_direct",
+      "transfer": "PlantDoc_to_PlantVillage",
+      "variant": "attention",
+      "metrics": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/cross_corpus/PlantDoc_to_PlantVillage/attention/direct/metrics.json",
+      "completed_at": "2025-11-12T18:42:00"
+    },
+    {
+      "experiment": "cross_corpus_direct",
+      "transfer": "PlantDoc_to_PlantVillage",
+      "variant": "multiscale_attention",
+      "metrics": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/cross_corpus/PlantDoc_to_PlantVillage/multiscale_attention/direct/metrics.json",
+      "completed_at": "2025-11-12T19:24:00"
+    },
+    {
+      "experiment": "cross_corpus_direct",
+      "transfer": "PlantVillage_to_PlantDoc",
+      "variant": "baseline",
+      "metrics": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Cross_Corpus/PlantVillage_to_PlantDoc/baseline/direct/metrics.json",
+      "completed_at": "2025-11-12T16:30:00"
+    },
+    {
+      "experiment": "cross_corpus_direct",
+      "transfer": "PlantVillage_to_PlantDoc",
+      "variant": "multiscale",
+      "metrics": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Cross_Corpus/PlantVillage_to_PlantDoc/multiscale/direct/metrics.json",
+      "completed_at": "2025-11-12T17:12:00"
+    },
+    {
+      "experiment": "cross_corpus_direct",
+      "transfer": "PlantVillage_to_PlantDoc",
+      "variant": "attention",
+      "metrics": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Cross_Corpus/PlantVillage_to_PlantDoc/attention/direct/metrics.json",
+      "completed_at": "2025-11-12T17:54:00"
+    },
+    {
+      "experiment": "cross_corpus_direct",
+      "transfer": "PlantVillage_to_PlantDoc",
+      "variant": "multiscale_attention",
+      "metrics": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Cross_Corpus/PlantVillage_to_PlantDoc/multiscale_attention/direct/metrics.json",
+      "completed_at": "2025-11-12T18:36:00"
+    },
+    {
+      "experiment": "cross_corpus_direct",
+      "transfer": "PlantDoc_to_PlantVillage",
+      "variant": "baseline",
+      "metrics": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Cross_Corpus/PlantDoc_to_PlantVillage/baseline/direct/metrics.json",
+      "completed_at": "2025-11-12T19:18:00"
+    },
+    {
+      "experiment": "cross_corpus_direct",
+      "transfer": "PlantDoc_to_PlantVillage",
+      "variant": "multiscale",
+      "metrics": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Cross_Corpus/PlantDoc_to_PlantVillage/multiscale/direct/metrics.json",
+      "completed_at": "2025-11-12T20:00:00"
+    },
+    {
+      "experiment": "cross_corpus_direct",
+      "transfer": "PlantDoc_to_PlantVillage",
+      "variant": "attention",
+      "metrics": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Cross_Corpus/PlantDoc_to_PlantVillage/attention/direct/metrics.json",
+      "completed_at": "2025-11-12T20:42:00"
+    },
+    {
+      "experiment": "cross_corpus_direct",
+      "transfer": "PlantDoc_to_PlantVillage",
+      "variant": "multiscale_attention",
+      "metrics": "/Users/aarjavjain/Desktop/Projects /computer vision/ConvGeM-NeXt/results/Cross_Corpus/PlantDoc_to_PlantVillage/multiscale_attention/direct/metrics.json",
+      "completed_at": "2025-11-12T21:24:00"
+    }
+  ],
+  "checkpoints": {
+    "policy": "Copy best_model.pth from the workstation into each variant folder listed below.",
+    "paths": [
+      "results/Plant VIllage Result/<variant>/best_model.pth",
+      "results/Plant Doc Result/<variant>/best_model.pth"
+    ],
+    "in_git": false
+  },
+  "notes": "Metrics and curves committed from lab runs; restore .pth from local backup if needed."
+}
