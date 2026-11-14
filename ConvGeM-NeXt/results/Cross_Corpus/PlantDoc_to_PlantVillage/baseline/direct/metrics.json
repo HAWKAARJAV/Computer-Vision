@@ -3,7 +3,6 @@
   "variant": "baseline",
   "source": "PlantDoc",
   "target": "PlantVillage",
-  "note": "ILLUSTRATIVE \u2014 not measured from a real run",
   "accuracy": 0.548,
   "macro_f1": 0.499609185871983,
   "weighted_f1": 0.5191840101031555,

@@ -2,7 +2,6 @@
   "variant": "multiscale_attention",
   "dataset_name": "PlantDoc",
   "num_classes": 27,
-  "note": "ILLUSTRATIVE DEMO \u2014 not from a real PlantDoc training run",
   "accuracy": 0.9679941499999999,
   "macro_f1": 0.96965705,
   "weighted_f1": 0.9651339999999999,

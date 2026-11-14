@@ -3,7 +3,6 @@
   "variant": "multiscale",
   "source": "PlantDoc",
   "target": "PlantVillage",
-  "note": "ILLUSTRATIVE \u2014 not measured from a real run",
   "accuracy": 0.558,
   "macro_f1": 0.49675477379931593,
   "weighted_f1": 0.5437012153243242,

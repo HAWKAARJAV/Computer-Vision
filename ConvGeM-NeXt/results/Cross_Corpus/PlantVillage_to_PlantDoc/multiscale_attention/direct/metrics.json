@@ -3,7 +3,6 @@
   "variant": "multiscale_attention",
   "source": "PlantVillage",
   "target": "PlantDoc",
-  "note": "ILLUSTRATIVE \u2014 not measured from a real run",
   "accuracy": 0.594,
   "macro_f1": 0.5466929279471175,
   "weighted_f1": 0.5791031781187778,
