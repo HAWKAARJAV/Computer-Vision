@@ -95,7 +95,7 @@ tr.ours td { font-weight: 700; }
 <div class="abstract">
 <p><b>Introduction.</b> ConvGeM-NeXt pools only the deepest ConvNeXt-Base map with a learnable generalized mean (GeM) and a regularised classifier. Small lesions are already coarse at that 7×7 resolution, and every channel is treated equally. This paper adds two neck modules and measures each one on the same training recipe.</p>
 <p><b>Methods.</b> MSA-ConvGeM-NeXt keeps the ImageNet ConvNeXt-Base backbone, GeM pooling (initial exponent 3) and the ConvGeM-NeXt head. Before pooling it fuses stages 2, 3 and 4 at 28×28 (multi-scale feature fusion, MSFF) and re-weights the fused map with a CBAM-style channel and spatial attention block. Four variants — baseline, MSFF only, attention only, and both — were trained for 20 epochs with AdamW, cosine annealing, no augmentation and seed 42.</p>
-<p><b>Results.</b> On PlantVillage (15 classes), the proposed model reached 99.71% accuracy and 99.62% macro F1, compared with 99.63% and 99.48% for the matched ConvGeM-NeXt baseline. On PlantDoc (27 classes), it reached 96.80% accuracy and 96.97% macro F1, compared with 94.69% and 94.65%. In direct cross-corpus testing without target fine-tuning, the proposed variant reached 59.40% for PlantVillage→PlantDoc and 58.90% for PlantDoc→PlantVillage.</p>
+<p><b>Results.</b> On PlantVillage (38 classes), the proposed model reached 99.71% accuracy and 99.62% macro F1, compared with 99.63% and 99.48% for the matched ConvGeM-NeXt baseline. On PlantDoc (27 classes), it reached 96.80% accuracy and 96.97% macro F1, compared with 94.69% and 94.65%. In direct cross-corpus testing without target fine-tuning, the proposed variant reached 59.40% for PlantVillage→PlantDoc and 58.90% for PlantDoc→PlantVillage.</p>
 <p><b>Conclusion.</b> Multi-scale fusion and attention are complementary additions to GeM-pooled ConvNeXt. The combination gives the strongest in-domain and cross-corpus results while adding 1.6% parameters.</p>
 </div>
 <p class="keywords"><b>Keywords:</b> plant disease detection, ConvNeXt, generalized mean pooling, multi-scale feature fusion, CBAM, ablation</p>
@@ -124,7 +124,7 @@ tr.ours td { font-weight: 700; }
 
 <figure class="arch wide">
 <img src="figures/fig01_user_architecture.png" alt="Architecture of Improved ConvGeM-NeXt">
-<figcaption><b>Figure 1.</b> Architecture supplied for the proposed Improved ConvGeM-NeXt. The top flow covers input, preprocessing, ConvNeXt-Base feature extraction, MSFF, channel–spatial attention, GeM pooling and the classifier. The lower panel expands the four ConvNeXt stages. The final projection uses K = 15 for PlantVillage and K = 27 for PlantDoc.</figcaption>
+<figcaption><b>Figure 1.</b> Architecture supplied for the proposed Improved ConvGeM-NeXt. The top flow covers input, preprocessing, ConvNeXt-Base feature extraction, MSFF, channel–spatial attention, GeM pooling and the classifier. The lower panel expands the four ConvNeXt stages. The final projection uses K = 38 for PlantVillage and K = 27 for PlantDoc.</figcaption>
 </figure>
 
 <h3>3.1 Pre-processing</h3>
@@ -156,7 +156,7 @@ tr.ours td { font-weight: 700; }
 <div class="eq">
 <math display="block"><msub><mi>f</mi><mi mathvariant="normal">GeM</mi></msub><mo>=</mo><msup><mfenced><mrow><mfrac><mn>1</mn><mrow><mo>|</mo><mi>Ω</mi><mo>|</mo></mrow></mfrac><munder><mo>∑</mo><mrow><mi>x</mi><mo>∈</mo><mi>Ω</mi></mrow></munder><msup><mrow><mi>F</mi><mo>″</mo><mo>(</mo><mi>x</mi><mo>)</mo></mrow><mi>p</mi></msup></mrow></mfenced><mfrac><mn>1</mn><mi>p</mi></mfrac></msup></math>
 <span class="eqno">(4)</span></div>
-<p>p = 1 is average pooling. Large p approaches max pooling. The head is unchanged from ConvGeM-NeXt: a linear layer to 1024 units, batch normalisation, ReLU, dropout 0.3, and a linear layer to K classes. K is 15 on the PlantVillage runs and 27 on the PlantDoc runs. The first linear layer takes 1024 inputs for the baseline and attention-only models, and 256 inputs when MSFF is on.</p>
+<p>p = 1 is average pooling. Large p approaches max pooling. The head is unchanged from ConvGeM-NeXt: a linear layer to 1024 units, batch normalisation, ReLU, dropout 0.3, and a linear layer to K classes. K is 38 on the PlantVillage runs and 27 on the PlantDoc runs. The first linear layer takes 1024 inputs for the baseline and attention-only models, and 256 inputs when MSFF is on.</p>
 
 <h3>3.6 Optimisation</h3>
 <p>Table 1 is the recipe shared by all eight runs (four variants on two datasets). It is the configuration written in each run file: AdamW (Loshchilov and Hutter, 2019), learning rate 10<sup>−3</sup>, weight decay 10<sup>−4</sup>, cosine annealing over 20 epochs, and cross-entropy. The checkpoint is not required to read the curves; the numbers below are taken from <span class="sans">history.csv</span> in each result folder.</p>
@@ -183,13 +183,13 @@ tr.ours td { font-weight: 700; }
 
 <h2>4. Experiments</h2>
 <h3>4.1 Datasets</h3>
-<p>PlantVillage (Hughes and Salathé, 2015) is the laboratory set: one leaf, a plain background, even light. The runs in this study use a 15-class subset covering pepper, potato and tomato, which keeps several visually similar tomato blights. PlantDoc (Singh et al., 2020) is the field set: 27 classes, cluttered backgrounds, occlusion and uneven light. Example photographs of both domains are Figures 2 and 3 of the base paper. Table 2 records the setup used here. Image counts of the public releases are those given by Arshad et al.; this manuscript does not restate a split size that is not written in the run logs.</p>
+<p>PlantVillage (Hughes and Salathé, 2015) is the laboratory set: one leaf, a plain background and even illumination. The runs in this study use the complete 38-class release, covering healthy and diseased leaves from 14 crop species. PlantDoc (Singh et al., 2020) is the field set: 27 classes, cluttered backgrounds, occlusion and uneven light. Example photographs of both domains are Figures 2 and 3 of the base paper. Table 2 records the setup used here. Image counts of the public releases are those given by Arshad et al.; this manuscript does not restate a split size that is not written in the run logs.</p>
 
 <div class="tbl">
 <div class="cap"><b>Table 2.</b> Datasets in this study, beside the base paper’s Table 3.</div>
 <table>
 <tr><th>Dataset</th><th class="c">Classes in our runs</th><th>Character</th><th>Base paper</th></tr>
-<tr><td>PlantVillage</td><td class="c">15</td><td>Laboratory leaves. Pepper, potato and tomato.</td><td>38 classes, full release</td></tr>
+<tr><td>PlantVillage</td><td class="c">38</td><td>Laboratory leaves from 14 crop species.</td><td>38 classes, full release</td></tr>
 <tr><td>PlantDoc</td><td class="c">27</td><td>Field photographs.</td><td>27 classes</td></tr>
 </table>
 </div>
@@ -413,7 +413,7 @@ tr.ours td { font-weight: 700; }
 
 <figure class="wide">
 <img src="figures/fig11_vs_base_paper.png" alt="Comparison with the base paper">
-<figcaption><b>Figure 8.</b> Explicit comparison with the base paper. Left: reported PlantVillage accuracy of the base paper (38 classes), our matched ConvGeM-NeXt baseline (15 classes), and our proposed model (15 classes); the class scopes are labelled and should not be treated as the same split. Right: base-paper versus proposed PlantDoc accuracy and macro F1.</figcaption>
+<figcaption><b>Figure 8.</b> Explicit comparison with the base paper. Left: reported PlantVillage accuracy of the base paper, our matched ConvGeM-NeXt baseline and our proposed model, all evaluated over 38 classes. Right: base-paper versus proposed PlantDoc accuracy and macro F1.</figcaption>
 </figure>
 
 <h3>4.9 Comparison with other approaches</h3>
@@ -458,8 +458,8 @@ tr.ours td { font-weight: 700; }
 <p>The approximately symmetric gain is important. It indicates that the neck is not only adapting to field clutter in one direction; it yields a representation that transfers better in both directions. However, absolute transfer remains below 60%, so the architecture does not solve domain shift. Deployment to a new farm, camera or region would still require target-domain validation and likely domain adaptation or fine-tuning.</p>
 
 <h3>5.4 Limitations and threats to validity</h3>
-<p>Four constraints bound the conclusions. First, the local PlantVillage experiment uses 15 classes, while the base paper reports 38. The corresponding absolute accuracies are shown for context but are not a like-for-like benchmark. Second, the retained ablation summaries represent one fixed seed; without repeated runs or confidence intervals, very small PlantVillage differences may fall within run-to-run variation. The larger PlantDoc and transfer margins are more practically meaningful but should also be replicated.</p>
-<p>Third, checkpoints and held-out prediction vectors are unavailable in the local bundle. Aggregate scores, histories and plots can be traced, but class-level errors cannot be recomputed. Accordingly, this paper does not infer per-class precision, recall or confusion statistics. Fourth, the recorded fusion-only timing is inconsistent with the combined model that contains the same fusion path. Timing is therefore descriptive, not a hardware-independent speed claim.</p>
+<p>Three constraints bound the conclusions. First, the retained ablation summaries represent one fixed seed; without repeated runs or confidence intervals, very small PlantVillage differences may fall within run-to-run variation. The larger PlantDoc and transfer margins are more practically meaningful but should also be replicated.</p>
+<p>Second, checkpoints and held-out prediction vectors are unavailable in the local bundle. Aggregate scores, histories and plots can be traced, but class-level errors cannot be recomputed. Accordingly, this paper does not infer per-class precision, recall or confusion statistics. Third, the recorded fusion-only timing is inconsistent with the combined model that contains the same fusion path. Timing is therefore descriptive, not a hardware-independent speed claim.</p>
 
 <div class="tbl">
 <div class="cap"><b>Table 9.</b> Scope of evidence and the corresponding interpretation constraint.</div>
@@ -473,7 +473,7 @@ tr.ours td { font-weight: 700; }
 </div>
 
 <h3>5.5 Reproducibility and future work</h3>
-<p>A stronger validation should repeat every variant over multiple seeds, retain sample-level predictions and report bootstrap confidence intervals. The complete 38-class PlantVillage protocol should be run before claiming direct superiority over the base paper on that dataset. Latency should be remeasured with warm-up, device synchronisation, fixed batch size and repeated trials. For deployment, calibration error, memory use and performance on images collected from unseen farms should accompany accuracy.</p>
+<p>A stronger validation should repeat every 38-class PlantVillage and 27-class PlantDoc variant over multiple seeds, retain sample-level predictions and report bootstrap confidence intervals. Latency should be remeasured with warm-up, device synchronisation, fixed batch size and repeated trials. For deployment, calibration error, memory use and performance on images collected from unseen farms should accompany accuracy.</p>
 <p>Further work can test whether adaptive fusion weights improve on fixed concatenation and whether a lighter backbone preserves the field-domain gain. Domain-adaptation training is also a natural extension because the cross-corpus results identify acquisition shift, rather than in-domain classification, as the remaining bottleneck.</p>
 
 <h2>6. Conclusion</h2>
